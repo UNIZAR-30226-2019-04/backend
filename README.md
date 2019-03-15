@@ -3,4 +3,4 @@
 Autores:
  - Héctor Ochoa
  - Jorge Generelo
- - David Fraile
+ - Daniel Fraile

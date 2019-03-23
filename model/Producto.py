@@ -1,4 +1,5 @@
 from .. import db
+from geoalchemy2 import Geography
 
 
 class Producto(db.Model):
@@ -11,8 +12,8 @@ class Producto(db.Model):
     NVisualizaciones = db.Column(db.Integer, nullable=False, default=0)
     Ubicacion = db.Column(Geography(geometry_type='POINT', srid=4326), nullable=True)
     Paypal = db.Column(db.Boolean, nullable=True)
-    Vendedor = db.Column(db.String(20), db.ForeignKey("Usuario.Nick"), nullable=False)
-    Comprador = db.Column(db.String(20), db.ForeignKey("Usuario.Nick"), nullable=True)
+    Vendedor = db.Column(db.Integer, db.ForeignKey("Usuario.id"), nullable=False)
+    Comprador = db.Column(db.Integer, db.ForeignKey("Usuario.id"), nullable=True)
     Borrado = db.Column(db.Borrado, nullable=False, default=False)
 
     def __repr__(self):

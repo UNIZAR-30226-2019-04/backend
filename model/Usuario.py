@@ -3,12 +3,15 @@ import jwt
 from model.blacklist import BlacklistToken
 from .. import db, flask_bcrypt
 from ..config import key
+from geoalchemy2 import Geography
 
 
 class Usuario(db.Model):
     __tablename__ = "Usuario"
 
-    Nick = db.Column(db.String(20), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    public_id = db.Column(db.String(100), nullable=False, unique=True)
+    Nick = db.Column(db.String(20), nullable=False, unique=True)
     Nombre = db.Column(db.String(20), nullable=False)
     Apellidos = db.Column(db.String(40), nullable=False)
     email = db.Column(db.String(100), nullable=False, unique=True)
@@ -24,8 +27,11 @@ class Usuario(db.Model):
     def __repr__(self):
         return "<Usuario '{}'>".format(self.Nick)
 
+    @property
+    def password(self):
+        raise AttributeError('Password: write-only field')
 
-    @Password.setter
+    @password.setter
     def password(self, password):
         self.Password = flask_bcrypt.generate_password_hash(
             password).decode('utf-8')

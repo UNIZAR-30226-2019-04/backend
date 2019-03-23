@@ -1,5 +1,6 @@
 from model.Usuario import Usuario
 from .. import db
+import uuid
 
 
 # Auxiliar para la generación del token
@@ -13,7 +14,7 @@ def generate_token(user):
             'Authorization': auth_token.decode()
         }
         return response_object, 201
-    except Exception as e:
+    except Exception:
         response_object = {
             'status': 'fail',
             'message': 'Some error occurred. Please try again.'
@@ -26,6 +27,7 @@ def insertar_usuario(data):
     user_mail = Usuario.query.filter_by(email=data['email']).first()
     if not user_nick and not user_mail:
         new_user = Usuario(
+            public_id=str(uuid.uuid4()),
             Nick=data['Nick'],
             Nombre=data['Nombre'],
             Apellidos=data['Apellidos'],
@@ -57,13 +59,8 @@ def get_all_users():
     return Usuario.query.all()
 
 
-def get_a_user(nick=None, email=None):
-    if nick:
-        return Usuario.query.filter_by(Nick=nick).first()
-    elif email:
-        return Usuario.query.filter_by(email=email).first()
-    else:
-        raise ValueError('Expected either Nick or email args')
+def get_a_user(public_id):
+    return Usuario.query.filter_by(public_id=public_id).first()
 
 
 def get_user_id(nick=None, email=None):

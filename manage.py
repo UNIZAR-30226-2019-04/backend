@@ -6,7 +6,7 @@ from flask_script import Manager
 
 from app import blueprint
 from app.main import create_app, db, socketio
-from app.main.model import user, blacklist, conversacion, mensaje
+from app.main.model import blacklist, Deseados,Mensaje,Pertenece,Producto,Reporte_Producto, Reporte_Usuario,Seguir, Seguir, Valoracion, Categoria
 
 app = create_app(os.getenv('BOILERPLATE_ENV') or 'dev')
 app.register_blueprint(blueprint)

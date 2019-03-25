@@ -5,8 +5,16 @@ import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-BD_PASWORD = os.getenv('BD_PASWORD', 'password')
-BD_NAME = os.getenv('BD_NAME', 'proyecto_software')
+BD_PASWORD = os.getenv('BD_PASWORD', '')
+BD_NAME = os.getenv('BD_NAME', 'telocam')
+
+POSTGRES = {
+    'user': 'jorgegene',
+    'db': 'jorgegene',
+    'pw': 'telocam',
+    'host': '127.0.0.1',
+    'port': '5432',
+}
 
 
 class Config:
@@ -18,16 +26,15 @@ class DevelopmentConfig(Config):
     # uncomment the line below to use postgres
     # SQLALCHEMY_DATABASE_URI = postgres_local_base
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'mysql://root:' + \
-        BD_PASWORD + '@localhost:3306/proyecto_software'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://%(user)s:%(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class TestingConfig(Config):
     DEBUG = True
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'mysql://root:' + \
-        BD_PASWORD + '@localhost:3306/proyecto_software_test'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://' + \
+        BD_PASWORD + '@155.210.47.51:15432/telocam_test'
     PRESERVE_CONTEXT_ON_EXCEPTION = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

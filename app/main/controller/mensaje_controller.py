@@ -5,7 +5,6 @@ from flask import jsonify
 from app.main.util.decorator import admin_token_required
 from ..util.dto import MensajeDto
 from ..service.mensaje_service import save_new_mensaje, get_all_mensajes
-from ..service.conversation_service import get_conversation_mensajes
 from app.main.util.decorator import admin_token_required, token_required
 
 

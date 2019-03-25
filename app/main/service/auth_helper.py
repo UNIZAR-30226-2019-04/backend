@@ -7,10 +7,11 @@ class Auth:
     @staticmethod
     def login_user(data):
         try:
+            print(data)
             # fetch the user data
             user = Usuario.query.filter_by(email=data.get('email')).first()
             if user and user.check_password(data.get('password')):
-                auth_token = User.encode_auth_token(user.id)
+                auth_token = Usuario.encode_auth_token(user.id)
                 if auth_token:
                     response_object = {
                         'status': 'success',
@@ -36,12 +37,13 @@ class Auth:
 
     @staticmethod
     def logout_user(data):
+        print(data)
         if data:
-            auth_token = data.split(" ")[1]
+            auth_token = data.split(" ")[0]
         else:
             auth_token = ''
         if auth_token:
-            resp = User.decode_auth_token(auth_token)
+            resp = Usuario.decode_auth_token(auth_token)
             if not isinstance(resp, str):
                 # mark the token as blacklisted
                 return save_token(token=auth_token)

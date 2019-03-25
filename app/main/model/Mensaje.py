@@ -1,7 +1,7 @@
 from .. import db
 import datetime
 
-class Producto(db.Model):
+class Mensaje(db.Model):
     __tablename__ = "Mensaje"
 
     ID = db.Column(db.Integer, primary_key=True, autoincrement=True)

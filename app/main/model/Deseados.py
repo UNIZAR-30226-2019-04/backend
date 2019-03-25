@@ -1,4 +1,5 @@
 from .. import db
+from app.main.model.Usuario import Usuario
 
 class Deseados(db.Model):
     __tablename__ = "Deseados"

@@ -4,6 +4,7 @@ import jwt
 from app.main.model.blacklist import BlacklistToken
 from ..config import key
 
+
 class Usuario(db.Model):
     __tablename__ = "Usuario"
 

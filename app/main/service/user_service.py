@@ -29,8 +29,10 @@ def save_new_user(data):
 def get_all_users():
     return Usuario.query.all()
 
+
 def get_a_user(Nick):
     return Usuario.query.filter_by(Nick=Nick).first()
+
 
 def get_user_NICK(email):
     return Usuario.query.filter_by(email=email).first().Nick

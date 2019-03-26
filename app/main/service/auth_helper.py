@@ -65,9 +65,9 @@ class Auth:
         # get the auth token
         auth_token = new_request.headers.get('Authorization')
         if auth_token:
-            resp = User.decode_auth_token(auth_token)
+            resp = Usuario.decode_auth_token(auth_token)
             if not isinstance(resp, str):
-                user = User.query.filter_by(id=resp).first()
+                user = Usuario.query.filter_by(id=resp).first()
                 response_object = {
                     'status': 'success',
                     'data': {

@@ -1,4 +1,5 @@
 import os
+from mailshake import SMTPMailer
 
 # uncomment the line below for postgres database url from environment variable
 # postgres_local_base = os.environ['DATABASE_URL']
@@ -15,6 +16,16 @@ POSTGRES = {
     'host': '127.0.0.1',
     'port': '5432',
 }
+
+mailer = SMTPMailer(
+                host="smtp.unizar.es",
+                port=587,
+                username=719509,
+                password="",  # TODO poner contraseña antes de correr el programa
+                use_tls=True,
+                use_ssl=None,
+                timeout=None
+            )
 
 
 class Config:

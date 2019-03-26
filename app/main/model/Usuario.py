@@ -73,5 +73,40 @@ class Usuario(db.Model):
         except jwt.InvalidTokenError:
             return 'Invalid token. Please log in again.'
 
+    @staticmethod
+    def encode_confirmation_token(user_mail):
+        """
+        Generates the Confirmation Token
+        :return: string
+        """
+        try:
+            payload = {
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1, seconds=5),
+                'iat': datetime.datetime.utcnow(),
+                'sub': user_mail
+            }
+            return jwt.encode(
+                payload,
+                key,
+                algorithm='HS256'
+            )
+        except Exception as e:
+            return e
+
+    @staticmethod
+    def decode_confirmation_token(confirmation_token):
+        """
+        Decodes the confirmation token
+        :param confirmation_token:
+        :return: integer|string
+        """
+        try:
+            payload = jwt.decode(confirmation_token, key)
+            return payload['sub']
+        except jwt.ExpiredSignatureError:
+            return 'Signature expired.'
+        except jwt.InvalidTokenError:
+            return 'Invalid token.'
+
     def __repr__(self):
         return "<Usuario '{}'>".format(self.Nick)

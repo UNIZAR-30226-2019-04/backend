@@ -17,7 +17,7 @@ class PointToAddress(Resource):
 
 
 @api.route('/point/<string:address>')
-@api.param('address', 'Latitude')
+@api.param('address', 'Address')
 class AddressToPoint(Resource):
     @api.doc('point')
     def get(self, address):

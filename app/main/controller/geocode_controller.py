@@ -1,4 +1,3 @@
-from flask import request
 from flask_restplus import Resource
 
 from ..util.dto import GeocodeDto
@@ -6,7 +5,8 @@ from ..service.geocode_service import point_to_address, address_to_point
 
 api = GeocodeDto.api
 
-@api.route('/address/<float:lat>,<float:lon>')
+
+@api.route('/address/<float:lat>/<float:lon>')
 @api.param('lat', 'Latitude')
 @api.param('lon', 'Longitude')
 class PointToAddress(Resource):

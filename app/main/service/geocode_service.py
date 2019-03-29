@@ -1,7 +1,6 @@
 from geopy.geocoders import Nominatim
 from geopy.exc import GeopyError
 from app.main.config import USER_AGENT
-import json
 
 geolocator = Nominatim(user_agent=USER_AGENT)
 
@@ -22,7 +21,7 @@ def point_to_address(lat: float, lon: float):
         }
         return response_object, 404
 
-    return json.dumps(location.raw["address"]), 200
+    return location.raw["address"], 200
 
 
 def address_to_point(address: str):
@@ -45,4 +44,4 @@ def address_to_point(address: str):
     for l in location:
         response_object.append(l.raw)
 
-    return json.dumps(response_object), 200
+    return response_object, 200

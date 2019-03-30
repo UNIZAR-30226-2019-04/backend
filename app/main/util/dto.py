@@ -1,0 +1,58 @@
+from flask_restplus import Namespace, fields
+
+import datetime
+
+
+class UserDto:
+    api = Namespace('user', description='user related operations')
+    user = api.model('user', {
+        'email': fields.String(required=True, description='user email address'),
+        'username': fields.String(required=True, description='user username'),
+        'password': fields.String(required=True, description='user password'),
+        'public_id': fields.String(description='user Identifier')
+    })
+
+
+class ProductoDto:
+    api = Namespace('producto', description='producto related operations')
+    producto = api.model('poducto', {
+        'precio': fields.Float(required=True, description='precio producto'),
+        'titulo': fields.String(required=True, description='nombre producto'),
+        'descripcion': fields.String(description='descripcion producto'),
+        'vendedor': fields.String(required=True, description='vendedor del producto'),
+        'fecha': fields.DateTime(required=True, description='fecha de creacion del producto')
+    })
+
+
+class ConversationDto:
+    api = Namespace(
+        'conversacion', description='conversacion related operations')
+    conversacion = api.model('conversacion', {
+        'id': fields.Integer(required=True, description='id'),
+        'seller': fields.Integer(required=True, description='seller id'),
+        'buyer': fields.Integer(required=True, description='buyer id'),
+        'seller_email': fields.String(required=True, description='seller email'),
+        'buyer_email': fields.String(required=True, description='buyer email'),
+
+    })
+
+
+class MensajeDto:
+    api = Namespace(
+        'mensaje', description='mensaje related operations')
+    mensaje = api.model('mensaje', {
+        'id': fields.Integer(required=True, description='id'),
+        'conversacion': fields.Integer(required=True, description='conversacion id'),
+        'text': fields.String(required=True, description='text'),
+        'user': fields.String(required=True, description='user'),
+        'created_date': fields.DateTime(required=True, description='created_date'),
+
+    })
+
+
+class AuthDto:
+    api = Namespace('auth', description='authentication related operations')
+    user_auth = api.model('auth_details', {
+        'email': fields.String(required=True, description='The email address'),
+        'password': fields.String(required=True, description='The user password '),
+    })

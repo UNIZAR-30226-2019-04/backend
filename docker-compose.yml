@@ -1,0 +1,14 @@
+version: "2"
+services:
+  web:
+    build: .
+    command: python manage.py run
+    ports:
+      - "5000:5000"
+    environment:
+      MYSQL_USER: "root"
+      BD_PASWORD: ""
+      BD_NAME: "proyecto_software"
+      SECRET_KEY: "secret-key"
+    volumes:
+      - .:/app

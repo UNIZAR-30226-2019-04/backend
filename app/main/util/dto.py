@@ -3,24 +3,34 @@ from flask_restplus import Namespace, fields
 import datetime
 
 
+# 'password': fields.String(required=True, description='user password'), GENERA CONFLICTO
 class UserDto:
     api = Namespace('user', description='user related operations')
     user = api.model('user', {
-        'email': fields.String(required=True, description='user email address'),
-        'username': fields.String(required=True, description='user username'),
-        'password': fields.String(required=True, description='user password'),
-        'public_id': fields.String(description='user Identifier')
+        'public_id': fields.String(description='id publico del usuario'),
+        'nick': fields.String(description='nick del usuario'),
+        'nombre': fields.String(description='nombre del usuario'),
+        'apellidos': fields.String(description='apellidos del usuario'),
+        'email': fields.String(required=True, description='email del usuario'),
+        'quiereEMails': fields.Boolean(description='si el usuario desea recibir emails'),
+        'valoracionMedia': fields.Float(description='valoracion media del usuario'),
+        'telefono': fields.Integer(description='telefono del usuario'),
+        'Imagen_Perfil_Path': fields.String(description='foto perfil del usuario')
     })
 
 
 class ProductoDto:
     api = Namespace('producto', description='producto related operations')
     producto = api.model('poducto', {
-        'precio': fields.Float(required=True, description='precio producto'),
-        'titulo': fields.String(required=True, description='nombre producto'),
-        'descripcion': fields.String(description='descripcion producto'),
-        'vendedor': fields.String(required=True, description='vendedor del producto'),
-        'fecha': fields.DateTime(required=True, description='fecha de creacion del producto')
+        'precioBase': fields.Float(required=True, description='precio base del producto'),
+        'precioAux': fields.Float(description='precio actual de la subasta o maximo del trueque'),
+        'descripcion': fields.String(required=True, description='descripcion del producto'),
+        'titulo': fields.String(required=True, description='nombre del producto'),
+        'visualizaciones': fields.Integer(description='numero de visualizaciones del producto'),
+        'fecha': fields.DateTime(description='fecha de creacion del producto'),
+        'vendedor': fields.Integer(required=True, description='vendedor del producto'),
+        'tipo': fields.Integer(required=True, description='venta, trueque o subasta')
+
     })
 
 

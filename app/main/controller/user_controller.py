@@ -3,10 +3,12 @@ from flask_restplus import Resource
 
 from app.main.util.decorator import admin_token_required
 from ..util.dto import UserDto
-from ..service.user_service import save_new_user, get_all_users, get_a_user
+from ..util.dto import ProductoDto
+from ..service.user_service import save_new_user, get_a_user, editar_usuario, get_user_products, get_users
 
 api = UserDto.api
 _user = UserDto.user
+_producto = ProductoDto.producto
 
 
 @api.route('/')
@@ -16,7 +18,7 @@ class UserList(Resource):
     @api.marshal_list_with(_user, envelope='data')
     def get(self):
         """List all registered users"""
-        return get_all_users()
+        return get_users()
 
     @api.expect(_user, validate=True)
     @api.response(201, 'User successfully created.')
@@ -28,7 +30,7 @@ class UserList(Resource):
 
 
 @api.route('/<public_id>')
-@api.param('public_id', 'The User identifier')
+# @api.param('public_id', 'The User identifier')
 @api.response(404, 'User not found.')
 class User(Resource):
     @api.doc('get a user')
@@ -42,4 +44,25 @@ class User(Resource):
             return user
 
 
+# TODO: Asegurar que solo el dueño o un administrador puede editar
+@api.route('/<public_id>/edit')
+# @api.param('public_id', 'The User identifier')
+@api.response(404, 'User not found.')
+class User(Resource):
+    @api.doc('edit a user')
+    @api.marshal_with(_user)
+    def post(self, public_id):
+        """edit a user given its identifier"""
+        data = request.json
+        return editar_usuario(public_id, data=data)
 
+
+@api.route('/<public_id>/products')
+# @api.param('public_id', 'User products')
+@api.response(404, 'User not found.')
+class User(Resource):
+    @api.doc('user products')
+    @api.marshal_with(_producto)
+    def get(self, public_id):
+        """get all products from given user"""
+        return get_user_products(public_id)

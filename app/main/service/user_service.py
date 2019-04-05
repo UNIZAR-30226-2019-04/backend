@@ -3,6 +3,7 @@ import datetime
 
 from app.main import db
 from app.main.model.usuario import Usuario
+from app.main.model.producto import Producto
 from ..config import mailer
 
 
@@ -13,15 +14,15 @@ def save_new_user(data):
         new_user = Usuario(
             public_id=str(uuid.uuid4()),
             nick=data['username'],
-            nombre=data['nombre'],
-            apellidos=data['apellidos'],
+            # nombre=data['nombre'],
+            # apellidos=data['apellidos'],
             email=data['email'],
             password=data['password']
-	        # TODO: Al registrarse se podría añadir la típica checkbox: "Quiero recibir emails..."
+            # TODO: Al registrarse se podría añadir la típica checkbox: "Quiero recibir emails..."
             # quiereEmails=data['quiereEmails'],
-            # Ubicacion=data['Ubicacion'],
-            # Telefono=data['telefono'],
-	        # Imagen_Perfil_Path=data['Imagen_Perfil_Path']
+            # ubicacion=data['Ubicacion'],
+            # telefono=data['telefono'],
+            # Imagen_Perfil_Path=data['Imagen_Perfil_Path']
         )
         save_changes(new_user)
         send_confirmation_email(new_user)
@@ -34,39 +35,72 @@ def save_new_user(data):
         return response_object, 409
 
 
-def get_all_users():
-    result = db.engine.execute("SELECT * FROM \"Usuario\";")
-    response_object = []
-    for usr in result:
-        response_object.append({
-            'username': usr[2],
-            'email': usr[5],
-            'public_id': usr[1],
-            'password': usr[6],
-        })
-    return response_object
+def editar_usuario(public_id, data):
+    user = Usuario.query.filter_by(public_id=public_id).first()
+    if user:
+        if 'nombre' in data:
+            user.nombre = data['nombre']
+        if 'apellidos' in data:
+            user.apellidos = data['apellidos']
+        if 'quiereEmails' in data:
+            user.quiereEmails = data['quiereEmails']
+        if 'telefono' in data:
+            user.telefono = data['telefono']
+        if 'Imagen_Perfil_Path' in data:
+            user.Imagen_Perfil_Path = data['Imagen_Perfil_Path']
+        # TODO: OJO
+        if 'email' in data:
+            user_mail = Usuario.query.filter_by(email=data['email']).first()
+            if user_mail:
+                response_object = {
+                    'status': 'fail',
+                    'message': 'Email already exists.',
+                }
+                return response_object, 409
+            else:
+                user.email = data['email']
+        if 'nick' in data:
+            user_nick = Usuario.query.filter_by(nick=data['nick']).first()
+            if user_nick:
+                response_object = {
+                    'status': 'fail',
+                    'message': 'Nick already exists.',
+                }
+                return response_object, 409
+            else:
+                user.nick = data['nick']
+        save_changes(user)
+        return user
+    else:
+        response_object = {
+            'status': 'fail',
+            'message': 'User not found.',
+        }
+        return response_object, 404
 
 
+# TODO: Devuelve todos los usuarios de la base
+def get_users():
+    return Usuario.query.all()
+
+# Recuperar un usuario dada su id publica
 def get_a_user(public_id):
-    response_object = {
-        'username': Usuario.query.filter_by(public_id=public_id).first().nick,
-        'email': Usuario.query.filter_by(public_id=public_id).first().email,
-        'public_id': Usuario.query.filter_by(public_id=public_id).first().public_id,
-        'password': Usuario.query.filter_by(public_id=public_id).first().password_hash,
-    }
-    return response_object
+    return Usuario.query.filter_by(public_id=public_id).first()
 
+
+# Recuperar la id publica de un usuario dado su nick o email
 def get_user_id(nick=None, email=None):
     if nick:
-        return Usuario.query.filter_by(nick=nick).first().id
+        return Usuario.query.filter_by(nick=nick).first().public_id
     elif email:
-        return Usuario.query.filter_by(email=email).first().id
+        return Usuario.query.filter_by(email=email).first().public_id
     else:
         raise ValueError('Expected either nick or email args')
 
-def get_user_NICK(email):
-    return Usuario.query.filter_by(email=email).first().nick
 
+def get_user_products(public_id):
+    usuario = Usuario.query.filter_by(public_id=public_id).first()
+    return Producto.query.filter_by(vendedor=usuario.id).all()
 
 def generate_token(user):
     try:

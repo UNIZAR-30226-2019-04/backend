@@ -17,13 +17,13 @@ class CategoriaList(Resource):
     #@admin_token_required
     @api.marshal_list_with(_categoria, envelope='data')
     def get(self):
-        """List all registered categorias"""
+        """Lista todas las categorías"""
         return get_all_categorias()
 
     @api.expect(_categoriaLista, validate=True)
-    @api.response(201, 'Categorias successfully created.')
-    @api.doc('create categorias')
+    @api.response(201, 'Categorías creadas con éxito.')
+    @api.doc('Crear categorías')
     def post(self):
-        """Creates new categoria(s) """
+        """Crea nueva categoría(s) """
         data = request.json
         return insertar_categorias(data=data)

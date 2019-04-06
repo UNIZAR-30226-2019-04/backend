@@ -80,6 +80,3 @@ class AuthDto:
         'email': fields.String(required=True, description='The email address'),
         'password': fields.String(required=True, description='The user password '),
     })
-
-class GeocodeDto:
-    api = Namespace('geocode', description='Operaciones de geocodificación')

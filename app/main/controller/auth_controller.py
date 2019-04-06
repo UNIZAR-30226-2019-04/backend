@@ -13,12 +13,11 @@ user_auth = AuthDto.user_auth
 @api.route('/login')
 # Send Access-Control-Allow-Headers
 class UserLogin(Resource):
-    """
-        User Login Resource
-    """
     @api.doc('user login')
     @api.expect(user_auth, validate=True)
+    @api.response(401, 'Contraseña o email incorrectos')
     def post(self):
+        """Recurso de login Usuario"""
         # get the post data
         post_data = request.json
         return Auth.login_user(data=post_data)
@@ -27,11 +26,10 @@ class UserLogin(Resource):
 @api.route('/logout')
 # Send Access-Control-Allow-Headers
 class LogoutAPI(Resource):
-    """
-    Logout Resource
-    """
     @api.doc('logout a user')
+    @api.response(403, 'Token invalido.')
     def post(self):
+        """Recurso de logout Usuario"""
         # get auth token
         auth_header = request.headers.get('Authorization')
         return Auth.logout_user(data=auth_header)

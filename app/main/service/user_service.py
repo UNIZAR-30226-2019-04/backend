@@ -146,23 +146,6 @@ def send_confirmation_email(user):
         return response_object, 401
 
 
-def confirm_user_email(public_id, token):
-    try:
-        user = get_a_user(public_id)
-        if user.email == Usuario.decode_confirmation_token(token):
-            user.validado = True
-            response_object = {
-                'status': 'success',
-                'message': 'E-mail validado.'
-            }
-            return response_object, 200
-    except Exception as e:
-        response_object = {
-            'status': 'fail',
-            'message': 'Some error occurred. Please try again.'
-        }
-        return response_object, 401
-
 def save_changes(data):
     db.session.add(data)
     db.session.commit()

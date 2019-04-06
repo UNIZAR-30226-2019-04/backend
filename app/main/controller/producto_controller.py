@@ -11,6 +11,7 @@ _producto = ProductoDto.producto
 _categorias = CategoriaListaDto.categoriaLista
 
 
+# TODO Añadir aquí la búsqueda de productos
 @api.route('/')
 class ProductoList(Resource):
     @api.doc('lista_de_productos')

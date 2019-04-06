@@ -4,6 +4,8 @@ from mailshake import SMTPMailer
 # uncomment the line below for postgres database url from environment variable
 # postgres_local_base = os.environ['DATABASE_URL']
 
+USER_AGENT = "Telocam"
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 BD_PASWORD = os.getenv('BD_PASWORD', '')

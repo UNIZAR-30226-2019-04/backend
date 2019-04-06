@@ -4,7 +4,7 @@ from flask_restplus import Resource
 from app.main.util.decorator import admin_token_required
 from ..util.dto import UserDto
 from ..util.dto import ProductoDto
-from ..service.user_service import save_new_user, get_a_user, editar_usuario, get_user_products, get_users
+from ..service.user_service import save_new_user, get_a_user, editar_usuario, get_user_products, get_users, confirm_user_email
 
 api = UserDto.api
 _user = UserDto.user
@@ -66,3 +66,17 @@ class User(Resource):
     def get(self, public_id):
         """get all products from given user"""
         return get_user_products(public_id)
+
+
+@api.route('/<public_id>/confirm_email/<token>')
+@api.param('public_id', 'ID usuario')
+@api.param('token', 'Token de validación')
+@api.response(200, 'OK.')
+@api.response(401, 'Error genérico.')
+@api.response(404, 'User not found.')
+class User(Resource):
+    @api.doc('confirm user email')
+    @api.marshal_with(_producto)
+    def get(self, public_id, token):
+        """Confirma el e-mail de un usuario dado el token enviado"""
+        return confirm_user_email(public_id, token)

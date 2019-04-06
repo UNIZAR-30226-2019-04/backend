@@ -10,7 +10,6 @@ api = GeocodeDto.api
 @api.param('lat', 'Latitud')
 @api.param('lon', 'Longitud')
 class PointToAddress(Resource):
-    @api.doc('point')
     @api.response(200, 'OK.')
     @api.response(400, 'Error genérico.')
     @api.response(404, 'Localización no encontrada.')

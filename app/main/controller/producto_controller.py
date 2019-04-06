@@ -3,10 +3,12 @@ from flask_restplus import Resource
 
 from app.main.util.decorator import admin_token_required
 from ..util.dto import ProductoDto
-from ..service.producto_service import insertar_producto, get_all_products, get_a_product, editar_producto, get_products
+from ..util.dto import CategoriaListaDto
+from ..service.producto_service import insertar_producto, get_product_categories, get_a_product, editar_producto, get_products, add_categorias
 
 api = ProductoDto.api
 _producto = ProductoDto.producto
+_categorias = CategoriaListaDto.categoriaLista
 
 
 @api.route('/')
@@ -48,13 +50,29 @@ class Product(Resource):
 @api.response(404, 'Product not found.')
 class Product(Resource):
     @api.doc('edit a product')
-    @api.marshal_with(_producto)
+    @api.expect(_producto, validate=True)
     def post(self, id):
         """edit a product given its identifier"""
         data = request.json
         return editar_producto(id, data=data)
 
 
+# TODO: Asegurar que solo el dueño o un administrador puede editar
+@api.route('/<id>/categorias')
+# @api.param('public_id', 'The User identifier')
+@api.response(404, 'Product not found.')
+class Product(Resource):
+    @api.doc('categorias de un producto')
+    # @admin_token_required
+    @api.marshal_list_with(_categorias, envelope='data')
+    def get(self, id):
+        """List all registered categories of given product"""
+        return get_product_categories(id)
 
-
+    @api.doc('add categories to a product')
+    @api.expect(_categorias, validate=True)
+    def post(self, id):
+        """add categories to a product given its identifier"""
+        data = request.json
+        return add_categorias(id, data=data)
 

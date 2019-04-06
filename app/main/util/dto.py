@@ -19,9 +19,24 @@ class UserDto:
     })
 
 
+class CategoriaDto:
+    api = Namespace('categoria', description='categoria related operations')
+    categoria = api.model('categoria', {
+        'nombre': fields.String(required=True, description='nombre de categoria')
+    })
+
+
+class CategoriaListaDto:
+    api = Namespace('categoriaLista', description='categoriaLista related operations')
+    categoriaLista = api.model('categoriaLista', {
+        'nombres': fields.List(fields.String, required=True, description='nombres de categorias')
+    })
+
+
 class ProductoDto:
     api = Namespace('producto', description='producto related operations')
-    producto = api.model('poducto', {
+    producto = api.model('producto', {
+        'id': fields.Integer(description='id del producto'),
         'precioBase': fields.Float(required=True, description='precio base del producto'),
         'precioAux': fields.Float(description='precio actual de la subasta o maximo del trueque'),
         'descripcion': fields.String(required=True, description='descripcion del producto'),
@@ -29,8 +44,7 @@ class ProductoDto:
         'visualizaciones': fields.Integer(description='numero de visualizaciones del producto'),
         'fecha': fields.DateTime(description='fecha de creacion del producto'),
         'vendedor': fields.Integer(required=True, description='vendedor del producto'),
-        'tipo': fields.Integer(required=True, description='venta, trueque o subasta')
-
+        'tipo': fields.Integer(required=True, description='venta, trueque o subasta'),
     })
 
 

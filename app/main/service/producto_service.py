@@ -1,4 +1,5 @@
 from app.main.model.producto import Producto
+from app.main.model.pertenece import Pertenece
 from .. import db
 
 
@@ -34,25 +35,58 @@ def editar_producto(id, data):
         return response_object, 404
 
 
-def get_all_products():
-    result = db.engine.execute("SELECT * FROM \"Producto\";")
-    response_object = []
-    for producto in result:
-        response_object.append({
-            'precioBase': producto[1],
-            'titulo': producto[3],
-            'descripcion': producto[2],
-            'vendedor': producto[7],
-            'fecha': producto[6],
-        })
-    return response_object
-
-
 def get_products():
     return Producto.query.all()
 
+
 def get_a_product(id_producto):
-    return Producto.query.filter_by(id=id_producto).first()
+    if Producto.query.filter_by(id=producto).first():
+        return Producto.query.filter_by(id=id_producto).first()
+    else:
+        response_object = {
+            'status': 'fail',
+            'message': 'Product not found.',
+        }
+        return response_object, 404
+
+
+def get_product_categories(id_producto):
+    if Producto.query.filter_by(id=id_producto).first():
+        per = Pertenece.query.filter_by(producto_id=id_producto).all()
+        response_object = {
+            'nombres': []
+        }
+        for cat in per:
+            response_object['nombres'].append(cat.categoria_nombre)
+        return response_object
+    else:
+        response_object = {
+            'status': 'fail',
+            'message': 'Product not found.',
+        }
+        return response_object, 404
+
+
+def add_categorias(producto, data):
+    categorias = data['nombres']
+    if Producto.query.filter_by(id=producto).first():
+        for categoria in categorias:
+            new_pertenece = Pertenece(
+                producto_id=int(producto),
+                categoria_nombre=categoria
+            )
+            save_changes(new_pertenece)
+        response_object = {
+            'status': 'success',
+            'message': 'Categorías añadidas con éxito.',
+        }
+        return response_object
+    else:
+        response_object = {
+            'status': 'fail',
+            'message': 'Product not found.',
+        }
+        return response_object, 404
 
 
 def save_changes(data):

@@ -15,7 +15,7 @@ class PointToAddress(Resource):
     @api.response(404, 'Localización no encontrada.')
     @api.doc('address')
     def get(self, lat, lon):
-        """Devuelve una lista de direcciones dadas latitud y longitud (en sistema de referencia WGS84)."""
+        """Devuelve una dirección dadas latitud y longitud (en sistema de referencia WGS84)."""
         return point_to_address(lat, lon)
 
 
@@ -27,5 +27,5 @@ class AddressToPoint(Resource):
     @api.response(400, 'Error genérico.')
     @api.response(404, 'Localización no encontrada.')
     def get(self, address):
-        """Devuelve un punto en sistema de referencia WGS84 dada una dirección."""
+        """Devuelve una lista de puntos en sistema de referencia WGS84 dada una dirección."""
         return address_to_point(address)

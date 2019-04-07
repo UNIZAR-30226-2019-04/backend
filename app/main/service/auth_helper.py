@@ -22,7 +22,8 @@ class Auth:
                         'status': 'success',
                         'message': 'Successfully logged in.',
                         'Authorization': auth_token.decode(),
-                        'user': user.nick
+                        'user': user.nick,
+                        'public_id': user.public_id
                     }
                     return response_object, 200
             else:

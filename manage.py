@@ -23,7 +23,7 @@ manager.add_command('db', MigrateCommand)
 
 @manager.command
 def run():
-    socketio.run(app, host='0.0.0.0')
+    socketio.run(app)
     # app.run()
 
 

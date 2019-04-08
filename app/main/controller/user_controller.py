@@ -48,7 +48,7 @@ class User(Resource):
 
     # TODO: Asegurar que solo el dueño o un administrador puede editar
     @api.doc('Editar un usuario')
-    @api.marshal_with(_user)
+    @api.expect(_user, validate=True)
     def put(self, public_id):
         """Edita un usuario dado su identificador público"""
         data = request.json

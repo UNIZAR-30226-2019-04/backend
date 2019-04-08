@@ -140,11 +140,11 @@ def send_confirmation_email(user):
             'status': 'success',
             'message': 'Successfully sent.',
         }
-        return response_object, 201
+        return response_object, 200
     except Exception as e:
         response_object = {
             'status': 'fail',
-            'message': 'Some error occurred. Please try again.'
+            'message': 'Some error occurred. Please try again.' + str(e)
         }
         return response_object, 401
 

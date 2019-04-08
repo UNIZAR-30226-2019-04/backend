@@ -159,10 +159,16 @@ def confirm_user_email(public_id, token):
                 'message': 'E-mail validado.'
             }
             return response_object, 200
+        else:
+            response_object = {
+                'status': 'fail',
+                'message': 'Token incorrecto.'
+            }
+            return response_object, 404
     except Exception as e:
         response_object = {
             'status': 'fail',
-            'message': 'Some error occurred. Please try again.'
+            'message': 'Some error occurred. Please try again.' + str(e)
         }
         return response_object, 401
 

@@ -4,11 +4,13 @@ from flask_restplus import Resource
 from app.main.util.decorator import admin_token_required
 from ..util.dto import UserDto
 from ..util.dto import ProductoDto
-from ..service.user_service import save_new_user, get_a_user, editar_usuario, get_user_products, get_users, confirm_user_email
+from ..util.dto import AuthDto
+from ..service.user_service import save_new_user, get_a_user, editar_usuario, get_user_products, get_users, confirm_user_email, send_confirmation_email
 
 api = UserDto.api
 _user = UserDto.user
 _producto = ProductoDto.producto
+user_auth = AuthDto.user_auth
 
 
 @api.route('/')
@@ -61,7 +63,7 @@ class User(Resource):
 @api.route('/<public_id>/products')
 # @api.param('public_id', 'User products')
 @api.response(404, 'Usuario no encontrado.')
-class User(Resource):
+class UserProducts(Resource):
     @api.doc('Lista de productos del usuario')
     @api.marshal_with(_producto)
     def get(self, public_id):
@@ -69,14 +71,32 @@ class User(Resource):
         return get_user_products(public_id)
 
 
-@api.route('/<public_id>/confirm_email/<token>')
+@api.route('/<public_id>/confirmar_email/<token>')
 @api.param('public_id', 'ID usuario')
 @api.param('token', 'Token de validación')
 @api.response(200, 'OK.')
 @api.response(401, 'Error genérico.')
-@api.response(404, 'User not found.')
-class User(Resource):
-    @api.doc('confirm user email')
+@api.response(404, 'No encontrado.')
+class UserConfirmEmail(Resource):
+    @api.doc('Confirma el email del usuario')
     def get(self, public_id, token):
         """Confirma el e-mail de un usuario dado el token enviado"""
         return confirm_user_email(public_id, token)
+
+
+# TODO: Asegurar que solo el dueño o un administrador puede
+@api.route('/<public_id>/enviar_email_confirmacion')
+@api.param('public_id', 'ID usuario')
+@api.response(200, 'OK.')
+@api.response(401, 'Error genérico.')
+@api.response(404, 'Usuario no encontrado.')
+class UserSendConfirmEmail(Resource):
+    @api.doc('confirm user email')
+    def get(self, public_id):
+        """Reenviar el correo de confirmación del e-mail un usuario"""
+        user = get_a_user(public_id)
+        if not user:
+            api.abort(404)
+        else:
+            return user
+        return send_confirmation_email(user)

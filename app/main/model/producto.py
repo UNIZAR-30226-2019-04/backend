@@ -1,6 +1,6 @@
 from .. import db
 import datetime
-# from geoalchemy2 import Geography
+from geoalchemy2 import Geometry
 
 
 class Producto(db.Model):
@@ -13,13 +13,14 @@ class Producto(db.Model):
     descripcion = db.Column(db.Text, nullable=False, default='')
     titulo = db.Column(db.String(255), nullable=False)
     visualizaciones = db.Column(db.Integer, nullable=False, default=0)
-    # Ubicacion = db.Column(Geography(geometry_type='POINT', srid=4326), nullable=True)
+    Ubicacion = db.Column(Geometry(geometry_type='POINT', srid=4326), nullable=True)
+    radioUbicacion = db.Column(db.Integer, nullable=False, default=0)
     paypal = db.Column(db.Boolean, nullable=True)
     fecha = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     vendedor = db.Column(db.Integer, db.ForeignKey("Usuario.id"), nullable=False)
     comprador = db.Column(db.Integer, db.ForeignKey("Usuario.id"), nullable=True)
     borrado = db.Column(db.Boolean, nullable=False, default=False)
-    # 0 para normal, 1 trueque, 2 subasta
+    # 0 para normal, 1 trueque, 2 subasta #FIXME cambiar por SQL TYPE, ver cómo se implementa
     tipo = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):

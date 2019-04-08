@@ -5,17 +5,19 @@ import datetime
 
 # 'password': fields.String(required=True, description='user password'), GENERA CONFLICTO
 class UserDto:
-    api = Namespace('user', description='user related operations')
+    api = Namespace('user', description='Operaciones sobre usuarios')
     user = api.model('user', {
-        'public_id': fields.String(description='id publico del usuario'),
-        'nick': fields.String(description='nick del usuario'),
-        'nombre': fields.String(description='nombre del usuario'),
-        'apellidos': fields.String(description='apellidos del usuario'),
+        'public_id': fields.String(description='Id publico del usuario'),
+        'nick': fields.String(description='Nick del usuario'),
+        'nombre': fields.String(description='Nombre del usuario'),
+        'apellidos': fields.String(description='Apellidos del usuario'),
         'email': fields.String(required=True, description='email del usuario'),
-        'quiereEMails': fields.Boolean(description='si el usuario desea recibir emails'),
-        'valoracionMedia': fields.Float(description='valoracion media del usuario'),
-        'telefono': fields.Integer(description='telefono del usuario'),
-        'Imagen_Perfil_Path': fields.String(description='foto perfil del usuario')
+        'quiereEMails': fields.Boolean(description='True si el usuario desea recibir emails, False en caso contrario'),
+        'valoracionMedia': fields.Float(description='Valoración media del usuario'),
+        'telefono': fields.Integer(description='Teléfono del usuario'),
+        'Imagen_Perfil_Path': fields.String(description='Foto de perfil del usuario'),
+        'Ubicacion': fields.String(description='Ubicación. Formato POINT(<lon> <lat>), ejemplo: \'POINT(3.0 -2.3)\''),
+        'radioUbicacion': fields.Integer(description='Radio en metros de la ubicación')
     })
 
 
@@ -45,6 +47,8 @@ class ProductoDto:
         'fecha': fields.DateTime(description='fecha de creacion del producto'),
         'vendedor': fields.Integer(required=True, description='vendedor del producto'),
         'tipo': fields.Integer(required=True, description='venta, trueque o subasta'),
+        'Ubicacion': fields.String(description='Ubicación. Formato POINT(<lon> <lat>), ejemplo: \'POINT(3.0 -2.3)\''),
+        'radioUbicacion': fields.Integer(description='Radio en metros de la ubicación')
     })
 
 

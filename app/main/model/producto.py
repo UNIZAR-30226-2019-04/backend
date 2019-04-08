@@ -1,6 +1,6 @@
 from .. import db
 import datetime
-from geoalchemy2 import Geometry
+from geoalchemy2.types import Geometry
 from sqlalchemy.dialects.postgresql import ENUM
 
 
@@ -14,7 +14,7 @@ class Producto(db.Model):
     descripcion = db.Column(db.Text, nullable=False, default='')
     titulo = db.Column(db.String(255), nullable=False)
     visualizaciones = db.Column(db.Integer, nullable=False, default=0)
-    Ubicacion = db.Column(Geometry(geometry_type='POINT', srid=4326), nullable=True)
+    Ubicacion = db.Column(Geometry(geometry_type='POINT', srid=4326, spatial_index=False), nullable=True)
     radioUbicacion = db.Column(db.Integer, nullable=False, default=0)
     paypal = db.Column(db.Boolean, nullable=True)
     fecha = db.Column(db.DateTime, default=datetime.datetime.utcnow)

@@ -18,11 +18,12 @@ class ProductoList(Resource):
     #@admin_token_required
     @api.marshal_list_with(_producto, envelope='data')
     def get(self):
-        """Parámetros opcionales"""
+        """Lista todos los productos registrados"""
+
+        # Parámetros opcionales
         preciomin = request.args.get('preciomin', default=0, type=float)
         preciomax = request.args.get('preciomax', default=np.inf, type=float)
 
-        """Lista todos los productos registrados"""
         #TODO Pasar parámetros y hacer búsqueda
         return get_products()
 

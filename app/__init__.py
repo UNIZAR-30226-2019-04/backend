@@ -13,9 +13,9 @@ from .main.controller.geocode_controller import api as geocode_ns
 blueprint = Blueprint('api', __name__)
 
 api = Api(blueprint,
-          title='FLASK RESTPLUS API BOILER-PLATE WITH JWT',
+          title='API Telocam',
           version='1.0',
-          description='a boilerplate for flask restplus web service'
+          description='Grupo 4: Margaret Hamilton'
           )
 
 api.add_namespace(user_ns, path='/user')

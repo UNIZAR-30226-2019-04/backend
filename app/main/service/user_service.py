@@ -6,6 +6,8 @@ from app.main.model.usuario import Usuario
 from app.main.model.producto import Producto
 from ..config import mailer
 
+from geoalchemy2.types import WKTElement
+
 
 def save_new_user(data):
     user_nick = Usuario.query.filter_by(nick=data['username']).first()
@@ -17,10 +19,11 @@ def save_new_user(data):
             # nombre=data['nombre'],
             # apellidos=data['apellidos'],
             email=data['email'],
-            password=data['password']
+            password=data['password'],
             # TODO: Al registrarse se podría añadir la típica checkbox: "Quiero recibir emails..."
             # quiereEmails=data['quiereEmails'],
-            # ubicacion=data['Ubicacion'],
+            Ubicacion=WKTElement(data['Ubicacion'], srid=4326),
+            RadioUbicacion=data['RadioUbicacion'],
             # telefono=data['telefono'],
             # Imagen_Perfil_Path=data['Imagen_Perfil_Path']
         )

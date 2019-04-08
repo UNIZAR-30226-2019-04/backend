@@ -1,3 +1,4 @@
+from geoalchemy2 import WKTElement
 from app.main.model.producto import Producto
 from app.main.model.pertenece import Pertenece
 from .. import db
@@ -8,7 +9,8 @@ def insertar_producto(data):
         precioBase=data['precioBase'],
         descripcion=data['descripcion'],
         titulo=data['titulo'],
-        # ubicacion=data['ubicacion'],
+        Ubicacion=WKTElement('POINT({0} {1})'.format(data['lon'], data['lat']), srid=4326),
+        RadioUbicacion=data['RadioUbicacion'],
         vendedor=data['vendedor'],
         tipo=data['tipo']
     )

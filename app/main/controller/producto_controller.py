@@ -1,5 +1,6 @@
 from flask import request
 from flask_restplus import Resource
+import numpy as np
 
 from app.main.util.decorator import admin_token_required
 from ..util.dto import ProductoDto
@@ -17,7 +18,13 @@ class ProductoList(Resource):
     #@admin_token_required
     @api.marshal_list_with(_producto, envelope='data')
     def get(self):
+        """Parámetros opcionales"""
+        preciomin = request.args.get('preciomin', default=0, type=float)
+        preciomax = request.args.get('preciomax', default=np.inf, type=float)
+
+
         """Lista todos los productos registrados"""
+        #TODO Pasar parámetros y hacer búsqueda
         return get_products()
 
     @api.expect(_producto, validate=True)

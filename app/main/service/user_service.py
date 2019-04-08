@@ -23,7 +23,7 @@ def save_new_user(data):
             # TODO: Al registrarse se podría añadir la típica checkbox: "Quiero recibir emails..."
             # quiereEmails=data['quiereEmails'],
             Ubicacion=WKTElement(data['Ubicacion'], srid=4326),
-            RadioUbicacion=data['RadioUbicacion'],
+            radioUbicacion=data['radioUbicacion'],
             # telefono=data['telefono'],
             # Imagen_Perfil_Path=data['Imagen_Perfil_Path']
         )

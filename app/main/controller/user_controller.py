@@ -46,15 +46,10 @@ class User(Resource):
         else:
             return user
 
-
-# TODO: Asegurar que solo el dueño o un administrador puede editar
-@api.route('/<public_id>/edit')
-# @api.param('public_id', 'The User identifier')
-@api.response(404, 'Usuario no encontrado.')
-class User(Resource):
+    # TODO: Asegurar que solo el dueño o un administrador puede editar
     @api.doc('Editar un usuario')
     @api.marshal_with(_user)
-    def post(self, public_id):
+    def update(self, public_id):
         """Edita un usuario dado su identificador público"""
         data = request.json
         return editar_usuario(public_id, data=data)
@@ -87,9 +82,10 @@ class UserConfirmEmail(Resource):
 # TODO: Asegurar que solo el dueño o un administrador puede
 @api.route('/<public_id>/enviar_email_confirmacion')
 @api.param('public_id', 'ID usuario')
-@api.response(200, 'OK.')
-@api.response(401, 'Error genérico.')
-@api.response(404, 'Usuario no encontrado.')
+@api.response(200, 'OK')
+@api.response(401, 'Error genérico')
+@api.response(404, 'Usuario no encontrado')
+@api.response(500, 'Error interno del servidor')
 class UserSendConfirmEmail(Resource):
     @api.doc('confirm user email')
     def get(self, public_id):

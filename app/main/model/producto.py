@@ -1,6 +1,7 @@
 from .. import db
 import datetime
 from geoalchemy2 import Geometry
+from sqlalchemy.dialects.postgresql import ENUM
 
 
 class Producto(db.Model):
@@ -20,8 +21,7 @@ class Producto(db.Model):
     vendedor = db.Column(db.Integer, db.ForeignKey("Usuario.id"), nullable=False)
     comprador = db.Column(db.Integer, db.ForeignKey("Usuario.id"), nullable=True)
     borrado = db.Column(db.Boolean, nullable=False, default=False)
-    # 0 para normal, 1 trueque, 2 subasta #FIXME cambiar por SQL TYPE, ver cómo se implementa
-    tipo = db.Column(db.Integer, nullable=False)
+    tipo = db.Column(ENUM('normal', 'trueque', 'subasta', name='tipoProducto'), nullable=False, default='normal')
 
     def __repr__(self):
         return "<Producto '{}'>".format(self.titulo)

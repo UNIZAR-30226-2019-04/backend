@@ -77,7 +77,6 @@ class User(Resource):
 @api.response(404, 'User not found.')
 class User(Resource):
     @api.doc('confirm user email')
-    @api.marshal_with(_producto)
     def get(self, public_id, token):
         """Confirma el e-mail de un usuario dado el token enviado"""
         return confirm_user_email(public_id, token)

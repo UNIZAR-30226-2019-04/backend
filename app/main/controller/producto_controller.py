@@ -21,8 +21,22 @@ class ProductoList(Resource):
         """Lista todos los productos registrados"""
 
         # Parámetros opcionales
+        textoBusqueda = request.args.get('textoBusqueda', default=None, type=str)
         preciomin = request.args.get('preciomin', default=0, type=float)
         preciomax = request.args.get('preciomax', default=np.inf, type=float)
+        ubicacion = request.args.get('ubicacion', default=None, type=str)
+        radioUbicacion = request.args.get('radioUbicacion', default=0, type=int)
+        categorias = request.args.get('categorias', default=None, type=str)
+        valoracionMin = request.args.get('valoracionMin', default=0, type=int)
+        valoracionMax = request.args.get('valoracionMax', default=10, type=int)
+
+        # Convertir str separada por ';' a array
+        if categorias:
+            categorias = categorias.split(";")
+
+        # Paginación
+        number = request.args.get('number', default=None, type=int)
+        page = request.args.get('page', default=1, type=int)  # Empieza a contar por 1
 
         #TODO Pasar parámetros y hacer búsqueda
         return get_products()
@@ -50,15 +64,10 @@ class Product(Resource):
         else:
             return producto
 
-
-# TODO: Asegurar que solo el dueño o un administrador puede editar
-@api.route('/<id>/edit')
-# @api.param('public_id', 'The User identifier')
-@api.response(404, 'Producto no encontrado.')
-class Product(Resource):
+    # TODO: Asegurar que solo el dueño o un administrador puede editar
     @api.doc('Editar un producto')
     @api.expect(_producto, validate=True)
-    def post(self, id):
+    def put(self, id):
         """Edita un producto dado su identificador"""
         data = request.json
         return editar_producto(id, data=data)

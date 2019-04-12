@@ -28,7 +28,7 @@ def save_new_user(data):
             # Imagen_Perfil_Path=data['Imagen_Perfil_Path']
         )
         save_changes(new_user)
-        send_confirmation_email(new_user)
+        send_confirmation_email(new_user.public_id)
         return generate_token(new_user)
     else:
         response_object = {
@@ -124,7 +124,15 @@ def generate_token(user):
         return response_object, 401
 
 
-def send_confirmation_email(user):
+def send_confirmation_email(public_id):
+    user = get_a_user(public_id)
+    if not user:
+        response_object = {
+            'status': 'fail',
+            'message': 'El usuario no ha sido encontrado.'
+        }
+        return response_object, 404
+
     try:
         # generate the auth token
         confirmation_token = Usuario.encode_confirmation_token(user.email)

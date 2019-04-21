@@ -43,7 +43,7 @@ def get_products():
 
 
 def get_a_product(id_producto):
-    if Producto.query.filter_by(id=producto).first():
+    if Producto.query.filter_by(id=id_producto).first():
         return Producto.query.filter_by(id=id_producto).first()
     else:
         response_object = {
@@ -55,7 +55,7 @@ def get_a_product(id_producto):
 
 # TODO: Completar con los parámetros que se quiera (los joins requieren trabajo adicional)
 # def search_products(textoBusqueda, preciomin, preciomax, ubicacion, radioUbicacion, valoracionMin, valoracionMax):
-def search_products(textobusqueda=None, preciomin=None, preciomax=None):
+def search_products(number=10, page=1, textobusqueda=None, preciomin=None, preciomax=None, tipocompra=None):
     query_args = {}
     query = "SELECT * FROM \"Producto\" WHERE "
     numpars = 0
@@ -77,7 +77,15 @@ def search_products(textobusqueda=None, preciomin=None, preciomax=None):
         query += "\"precioBase\" <= :preciomax"
         numpars += 1
         query_args['preciomax'] = preciomax
-
+    if tipocompra:
+        if numpars != 0:
+            query += " AND "
+        query += "tipo = :tipocompra"
+        numpars += 1
+        query_args['tipocompra'] = tipocompra
+    query += " LIMIT :number OFFSET :page"
+    query_args['number'] = number
+    query_args['page'] = page
     result = db.engine.execute(text(query), query_args)
     d, a = {}, []
     for row in result:

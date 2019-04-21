@@ -5,7 +5,7 @@ import numpy as np
 from app.main.util.decorator import admin_token_required
 from ..util.dto import ProductoDto
 from ..util.dto import CategoriaListaDto
-from ..service.producto_service import insertar_producto, get_product_categories, get_a_product, editar_producto, get_products, add_categorias
+from ..service.producto_service import insertar_producto, get_product_categories, get_a_product, editar_producto, search_products, add_categorias
 
 api = ProductoDto.api
 _producto = ProductoDto.producto
@@ -15,20 +15,21 @@ _categorias = CategoriaListaDto.categoriaLista
 @api.route('/')
 class ProductoList(Resource):
     @api.doc('lista_de_productos')
-    #@admin_token_required
+    # @admin_token_required
     @api.marshal_list_with(_producto, envelope='data')
     def get(self):
         """Lista todos los productos registrados"""
 
         # Parámetros opcionales
-        textoBusqueda = request.args.get('textoBusqueda', default=None, type=str)
+        textobusqueda = request.args.get('textoBusqueda', default=None, type=str)
         preciomin = request.args.get('preciomin', default=0, type=float)
         preciomax = request.args.get('preciomax', default=np.inf, type=float)
-        ubicacion = request.args.get('ubicacion', default=None, type=str)
-        radioUbicacion = request.args.get('radioUbicacion', default=0, type=int)
+        # ubicacion = request.args.get('ubicacion', default=None, type=str)
+        # radioUbicacion = request.args.get('radioUbicacion', default=0, type=int)
         categorias = request.args.get('categorias', default=None, type=str)
         valoracionMin = request.args.get('valoracionMin', default=0, type=int)
         valoracionMax = request.args.get('valoracionMax', default=10, type=int)
+        tipocompra = request.args.get('tipo', default=None, type=enumerate)
 
         # Convertir str separada por ';' a array
         if categorias:
@@ -38,8 +39,8 @@ class ProductoList(Resource):
         number = request.args.get('number', default=None, type=int)
         page = request.args.get('page', default=1, type=int)  # Empieza a contar por 1
 
-        #TODO Pasar parámetros y hacer búsqueda
-        return get_products()
+        # TODO Pasar parámetros y hacer búsqueda
+        return search_products(number, page, textobusqueda, preciomin, preciomax, tipocompra)
 
     @api.expect(_producto, validate=True)
     @api.response(201, 'Product successfully created.')

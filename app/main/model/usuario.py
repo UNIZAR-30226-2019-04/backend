@@ -24,6 +24,7 @@ class Usuario(db.Model):
     telefono = db.Column(db.Integer, nullable=True)
     Imagen_Perfil_Path = db.Column(db.String(255), nullable=False, default="/default.jpg")
     borrado = db.Column(db.Boolean, nullable=False, default=False)
+    descripcion = db.Column(db.Text, nullable=False, default='')
 
 
     @property

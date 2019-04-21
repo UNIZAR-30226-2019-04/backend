@@ -4,7 +4,9 @@ import datetime
 from app.main import db
 from app.main.model.usuario import Usuario
 from app.main.model.producto import Producto
+from app.main.model.valoracion import Valoracion
 from ..config import mailer
+from sqlalchemy import text
 
 from geoalchemy2.types import WKTElement
 
@@ -16,24 +18,25 @@ def save_new_user(data):
         new_user = Usuario(
             public_id=str(uuid.uuid4()),
             nick=data['username'],
-            # nombre=data['nombre'],
-            # apellidos=data['apellidos'],
             email=data['email'],
             password=data['password'],
             # TODO: Al registrarse se podría añadir la típica checkbox: "Quiero recibir emails..."
             # quiereEmails=data['quiereEmails'],
-            Ubicacion=WKTElement(data['Ubicacion'], srid=4326),
-            radioUbicacion=data['radioUbicacion'],
-            # telefono=data['telefono'],
-            # Imagen_Perfil_Path=data['Imagen_Perfil_Path']
+            # Ubicacion=WKTElement(data['Ubicacion'], srid=4326),
+            # radioUbicacion=data['radioUbicacion'],
         )
         save_changes(new_user)
         send_confirmation_email(new_user.public_id)
         return generate_token(new_user)
+    elif user_mail:
+        response_object = {
+            'status': 'fail',
+            'message': 'El email ya está en uso',
+        }
     else:
         response_object = {
             'status': 'fail',
-            'message': 'User already exists. Please Log in.',
+            'message': 'El nombre de usuario ya está en uso',
         }
         return response_object, 409
 
@@ -51,27 +54,30 @@ def editar_usuario(public_id, data):
             user.telefono = data['telefono']
         if 'Imagen_Perfil_Path' in data:
             user.Imagen_Perfil_Path = data['Imagen_Perfil_Path']
-        # TODO: OJO
-        if 'email' in data:
+        if 'descripcion' in data:
+            user.descripcion = data['descripcion']
+        # TODO: ¿SE PUEDE EDITAR EL MAIL?
+        if 'email' in data and user.email != data['email']:
             user_mail = Usuario.query.filter_by(email=data['email']).first()
             if user_mail:
                 response_object = {
                     'status': 'fail',
-                    'message': 'Email already exists.',
+                    'message': 'El email ya está en uso.',
                 }
                 return response_object, 409
             else:
                 user.email = data['email']
-        if 'nick' in data:
+        if 'nick' in data and user.nick != data['nick']:
             user_nick = Usuario.query.filter_by(nick=data['nick']).first()
             if user_nick:
                 response_object = {
                     'status': 'fail',
-                    'message': 'Nick already exists.',
+                    'message': 'El nombre de usuario ya está en uso.',
                 }
                 return response_object, 409
             else:
                 user.nick = data['nick']
+        # TODO: UBICACIÓN
         save_changes(user)
         return user
     else:
@@ -86,9 +92,46 @@ def editar_usuario(public_id, data):
 def get_users():
     return Usuario.query.all()
 
+
+# Recuperar un usuario dada su id publica
+def get_a_userOLD(public_id):
+    return Usuario.query.filter_by(public_id=public_id).first()
+
+
 # Recuperar un usuario dada su id publica
 def get_a_user(public_id):
-    return Usuario.query.filter_by(public_id=public_id).first()
+    user = Usuario.query.filter_by(public_id=public_id).first()
+    response_object = {
+        'username': user.nick,
+        'descripcion': user.descripcion,
+    }
+
+    id_usr = user.id
+    query_args = {}
+
+    query = "SELECT COUNT(*) FROM \"Producto\" WHERE vendedor = :id"
+    query_args['id'] = id_usr
+    result = db.engine.execute(text(query), query_args)
+    print(result)
+
+    query = "SELECT COUNT(*) FROM \"Producto\" WHERE vendedor = :id"
+    result = db.engine.execute(text(query), query_args)
+    print(result)
+
+    productos = Producto.query.filter_by(id=id_usr).all()
+    response_object['cajas_productos'] = productos
+
+    query = "SELECT * FROM \"Producto\" AS p, \"Deseados\" as d WHERE p.id = d.producto_id AND d.usuario_id = :id"
+    result = db.engine.execute(text(query), query_args)
+    print(result)
+
+    valoraciones_hechas = Valoracion.query.filter_by(puntuador=id_usr).all()
+    response_object['valoraciones_hechas'] = valoraciones_hechas
+
+    valoraciones_recibidas = Valoracion.query.filter_by(puntuado=id_usr).all()
+    response_object['valoraciones_recibidas'] = valoraciones_recibidas
+
+    return response_object
 
 
 # Recuperar la id publica de un usuario dado su nick o email
@@ -104,6 +147,7 @@ def get_user_id(nick=None, email=None):
 def get_user_products(public_id):
     usuario = Usuario.query.filter_by(public_id=public_id).first()
     return Producto.query.filter_by(vendedor=usuario.id).all()
+
 
 def generate_token(user):
     try:

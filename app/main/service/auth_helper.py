@@ -9,27 +9,35 @@ class Auth:
         try:
             print(data)
             # fetch the user data
-            _email = data.get('email')
-            _nick = data.get('nick')
-            if _email:
-                user = Usuario.query.filter_by(email=_email).first()
-            else:
-                user = Usuario.query.filter_by(nick=_nick).first()
+            user_email = Usuario.query.filter_by(email=data.get('email')).first()
+            user_nick = Usuario.query.filter_by(nick=data.get('email')).first()
+            if user_email:
+                user = user_email
+            elif user_nick:
+                user = user_nick
             if user and user.check_password(data.get('password')):
-                auth_token = Usuario.encode_auth_token(user.id)
-                if auth_token:
+                if user.validado:
+                    auth_token = Usuario.encode_auth_token(user.id)
+                    if auth_token:
+                        response_object = {
+                            'status': 'success',
+                            'message': 'Successfully logged in.',
+                            'Authorization': auth_token.decode(),
+                            'user': user.nick,
+                            'public_id': user.public_id
+                        }
+                        return response_object, 200
+                else:
                     response_object = {
-                        'status': 'success',
-                        'message': 'Successfully logged in.',
-                        'Authorization': auth_token.decode(),
-                        'user': user.nick,
-                        'public_id': user.public_id
+                        'status': 'fail',
+                        'message': 'El usuario no está validado.'
                     }
-                    return response_object, 200
+                    # TODO: REVISAR CÓDIGO ERROR
+                    return response_object, 401
             else:
                 response_object = {
                     'status': 'fail',
-                    'message': 'email or password does not match.'
+                    'message': 'email/username o contraseña no coinciden.'
                 }
                 return response_object, 401
 

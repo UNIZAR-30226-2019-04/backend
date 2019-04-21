@@ -15,7 +15,7 @@ user_auth = AuthDto.user_auth
 class UserLogin(Resource):
     @api.doc('user login')
     @api.expect(user_auth, validate=True)
-    @api.response(401, 'Contraseña o email incorrectos')
+    @api.response(401, 'Contraseña o email o username incorrectos')
     def post(self):
         """Recurso de login Usuario"""
         # get the post data

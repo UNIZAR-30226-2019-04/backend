@@ -19,6 +19,10 @@ class UserDto:
         'Ubicacion': fields.String(description='Ubicación. Formato POINT(<lon> <lat>), ejemplo: \'POINT(3.0 -2.3)\''),
         'radioUbicacion': fields.Integer(description='Radio en metros de la ubicación')
     })
+    user_reg = api.model('user', {
+        'nick': fields.String(description='Nick del usuario'),
+        'email': fields.String(required=True, description='email del usuario'),
+    })
 
 
 class CategoriaDto:
@@ -81,9 +85,10 @@ class MensajeDto:
 class AuthDto:
     api = Namespace('auth', description='authentication related operations')
     user_auth = api.model('auth_details', {
-        'email': fields.String(required=True, description='The email address'),
-        'password': fields.String(required=True, description='The user password '),
+        'email': fields.String(required=True, description='Email o username'),
+        'password': fields.String(required=True, description='Contraseña'),
     })
+
 
 class GeocodeDto:
     api = Namespace('geocode', description='Operaciones de geocodificación')

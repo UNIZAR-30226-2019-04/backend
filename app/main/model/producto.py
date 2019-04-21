@@ -18,6 +18,8 @@ class Producto(db.Model):
     radioUbicacion = db.Column(db.Integer, nullable=False, default=0)
     paypal = db.Column(db.Boolean, nullable=True)
     fecha = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    # TODO: ¿FECHA EXPIRACIÓN?
+    # fechaexpiracion = db.Column(db.DateTime, nullable=True)
     vendedor = db.Column(db.Integer, db.ForeignKey("Usuario.id"), nullable=False)
     comprador = db.Column(db.Integer, db.ForeignKey("Usuario.id"), nullable=True)
     borrado = db.Column(db.Boolean, nullable=False, default=False)

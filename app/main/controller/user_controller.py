@@ -11,6 +11,7 @@ api = UserDto.api
 _user = UserDto.user
 _producto = ProductoDto.producto
 user_auth = AuthDto.user_auth
+_userReg = UserDto.user_reg
 
 
 @api.route('/')
@@ -22,7 +23,7 @@ class UserList(Resource):
         """Lista todos los usuarios registrados"""
         return get_users()
 
-    @api.expect(_user, validate=True)
+    @api.expect(_userReg, validate=True)
     @api.response(201, 'Usuario creado con éxito.')
     @api.response(409, 'Usuario ya existe.')
     @api.doc('create a new user')

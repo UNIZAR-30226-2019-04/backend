@@ -38,7 +38,7 @@ class UserList(Resource):
 @api.response(404, 'Usuario no encontrado.')
 class User(Resource):
     @api.doc('Obtener un usuario')
-    @api.marshal_with(_user)
+    # @api.marshal_with(_user)
     def get(self, public_id):
         """Obtiene un usuario dado su identificador público"""
         user = get_a_user(public_id)

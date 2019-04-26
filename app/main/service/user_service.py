@@ -33,6 +33,7 @@ def save_new_user(data):
             'status': 'fail',
             'message': 'El email ya está en uso',
         }
+        return response_object, 409
     else:
         response_object = {
             'status': 'fail',
@@ -94,44 +95,93 @@ def get_users():
 
 
 # Recuperar un usuario dada su id publica
-def get_a_userOLD(public_id):
-    return Usuario.query.filter_by(public_id=public_id).first()
-
-
-# Recuperar un usuario dada su id publica
 def get_a_user(public_id):
     user = Usuario.query.filter_by(public_id=public_id).first()
-    response_object = {
-        'username': user.nick,
-        'descripcion': user.descripcion,
-    }
+    if user:
+        response_object = {
+            'nick': user.nick,
+            'descripcion': user.descripcion,
+            'valoracions_hechas': [],
+            'valoracions_recibidas': [],
+            'cajas_productos': [],
+        }
 
-    id_usr = user.id
-    query_args = {}
+        id_usr = user.id
+        query_args = {}
+        # Productos vendidos por el usuario
+        query = "SELECT COUNT(*) FROM \"Producto\" WHERE vendedor = :id AND comprador IS NOT NULL"
+        query_args['id'] = id_usr
+        result = db.engine.execute(text(query), query_args)
+        for row in result:
+            # row.items() returns an array like [(key0, value0), (key1, value1)]
+            for column, value in row.items():
+                response_object['productos_venta'] = value
 
-    query = "SELECT COUNT(*) FROM \"Producto\" WHERE vendedor = :id"
-    query_args['id'] = id_usr
-    result = db.engine.execute(text(query), query_args)
-    print(result)
+        # Productos comprados por el usuario
+        query = "SELECT COUNT(*) FROM \"Producto\" WHERE comprador = :id"
+        result = db.engine.execute(text(query), query_args)
+        for row in result:
+            # row.items() returns an array like [(key0, value0), (key1, value1)]
+            for column, value in row.items():
+                # build up the dictionary
+                response_object['productos_compra'] = value
 
-    query = "SELECT COUNT(*) FROM \"Producto\" WHERE vendedor = :id"
-    result = db.engine.execute(text(query), query_args)
-    print(result)
+        # Productos que el usuario tiene a la venta
+        productos = Producto.query.filter_by(vendedor=id_usr).filter_by(comprador=None).all()
+        for p in productos:
+            producto = {
+                'id': p.id,
+                'precioBase': p.precioBase,
+                'precioAux': p.precioAux,
+                'descripcion': p.descripcion,
+                'titulo': p.titulo,
+                'visualizaciones': p.visualizaciones,
+                'fecha': p.fecha.strftime('%d/%m/%Y'),
+                'vendedor': p.vendedor,
+                'tipo': p.tipo,
+            }
+            response_object['cajas_productos'].append(producto)
 
-    productos = Producto.query.filter_by(id=id_usr).all()
-    response_object['cajas_productos'] = productos
+        # Productos en la lista de deseados del usuario
+        query = "SELECT * FROM \"Producto\" AS p, \"Deseados\" as d WHERE p.id = d.producto_id AND d.usuario_id = :id"
+        result = db.engine.execute(text(query), query_args)
+        d, a = {}, []
+        for row in result:
+            # row.items() returns an array like [(key0, value0), (key1, value1)]
+            for column, value in row.items():
+                # build up the dictionary
+                d = {**d, **{column: value}}
+            a.append(d)
+        response_object['deseados'] = a
 
-    query = "SELECT * FROM \"Producto\" AS p, \"Deseados\" as d WHERE p.id = d.producto_id AND d.usuario_id = :id"
-    result = db.engine.execute(text(query), query_args)
-    print(result)
+        # Valoraciones hechas por el usuario
+        valoraciones_hechas = Valoracion.query.filter_by(puntuador=id_usr).all()
+        for v in valoraciones_hechas:
+            valoracion = {
+                'descripcion': v.descripcion,
+                'puntuacion': v.puntuacion,
+                'puntuador': user.nick,
+                'puntuado': Usuario.query.filter_by(id=v.puntuado).first().nick,
+            }
+            response_object['valoracions_hechas'].append(valoracion)
 
-    valoraciones_hechas = Valoracion.query.filter_by(puntuador=id_usr).all()
-    response_object['valoraciones_hechas'] = valoraciones_hechas
-
-    valoraciones_recibidas = Valoracion.query.filter_by(puntuado=id_usr).all()
-    response_object['valoraciones_recibidas'] = valoraciones_recibidas
-
-    return response_object
+        # Valoraciones recibidas por el usuario
+        valoraciones_recibidas = Valoracion.query.filter_by(puntuado=id_usr).all()
+        for v in valoraciones_recibidas:
+            valoracion = {
+                'descripcion': v.descripcion,
+                'puntuacion': v.puntuacion,
+                'puntuador': Usuario.query.filter_by(id=v.puntuador).first().nick,
+                'puntuado': user.nick,
+            }
+            response_object['valoracions_recibidas'].append(valoracion)
+        return response_object
+    else:
+        response_object = {
+            'status': 'fail',
+            'message': 'El usuario no existe.',
+        }
+        return response_object, 404
 
 
 # Recuperar la id publica de un usuario dado su nick o email
@@ -223,6 +273,7 @@ def confirm_user_email(public_id, token):
             'message': 'Some error occurred. Please try again.' + str(e)
         }
         return response_object, 401
+
 
 def save_changes(data):
     db.session.add(data)

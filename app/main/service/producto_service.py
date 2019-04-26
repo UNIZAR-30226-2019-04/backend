@@ -55,32 +55,48 @@ def get_a_product(id_producto):
 
 # TODO: Completar con los parámetros que se quiera (los joins requieren trabajo adicional)
 # def search_products(textoBusqueda, preciomin, preciomax, ubicacion, radioUbicacion, valoracionMin, valoracionMax):
-def search_products(number=10, page=1, textobusqueda=None, preciomin=None, preciomax=None, tipocompra=None):
+def search_products(number=10, page=1, textobusqueda=None, preciomin=None, preciomax=None, tipocompra=None, valoracionMin=None, valoracionMax=None):
     query_args = {}
-    query = "SELECT * FROM \"Producto\" WHERE "
+    query = "SELECT * FROM \"Producto\" AS p"
     numpars = 0
+    if valoracionMin or valoracionMax:
+        query += ", \"Usuario\" AS u WHERE "
+        if valoracionMin:
+            query += "(u.id = p.vendedor AND u.valoracion_media >= :valoracionMin)"
+            numpars += 1
+            query_args['valoracionMin'] = valoracionMin
+        if valoracionMax:
+            if numpars != 0:
+                query += " AND "
+            query += "(u.id = p.vendedor AND u.valoracion_media <= :valoracionMax)"
+            numpars += 1
+            query_args['valoracionMax'] = valoracionMax
+    else:
+        query += " WHERE "
     # TODO: Pensar bien cómo hacer esta búsqueda, ¿número de apariciones del string?, ¿tiene más peso si aparece en el título?, ...
     if textobusqueda:
+        if numpars != 0:
+            query += " AND"
         textobusqueda = "%" + textobusqueda + "%"
         query += "(titulo LIKE :textobusqueda OR descripcion LIKE :textobusqueda)"
         numpars += 1
         query_args['textobusqueda'] = textobusqueda
     if preciomin:
         if numpars != 0:
-            query += " AND "
-        query += "\"precioBase\" >= :preciomin"
+            query += " AND"
+        query += " \"precioBase\" >= :preciomin"
         numpars += 1
         query_args['preciomin'] = preciomin
     if preciomax:
         if numpars != 0:
-            query += " AND "
-        query += "\"precioBase\" <= :preciomax"
+            query += " AND"
+        query += " \"precioBase\" <= :preciomax"
         numpars += 1
         query_args['preciomax'] = preciomax
     if tipocompra:
         if numpars != 0:
             query += " AND "
-        query += "tipo = :tipocompra"
+        query += " tipo = :tipocompra"
         numpars += 1
         query_args['tipocompra'] = tipocompra
     query += " LIMIT :number OFFSET :page"

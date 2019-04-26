@@ -40,7 +40,7 @@ class ProductoList(Resource):
         page = request.args.get('page', default=1, type=int)  # Empieza a contar por 1
 
         # TODO Pasar parámetros y hacer búsqueda
-        return search_products(number, page, textobusqueda, preciomin, preciomax, tipocompra)
+        return search_products(number, page, textobusqueda, preciomin, preciomax, tipocompra, valoracionMin, valoracionMax)
 
     @api.expect(_producto, validate=True)
     @api.response(201, 'Product successfully created.')

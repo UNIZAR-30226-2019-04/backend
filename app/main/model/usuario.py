@@ -18,7 +18,7 @@ class Usuario(db.Model):
     password_hash = db.Column(db.String(128), nullable=False)
     validado = db.Column(db.Boolean, nullable=False, default=False)
     quiereEmails = db.Column(db.Boolean, nullable=False, default=True)
-    valoracionMedia = db.Column(db.Float, nullable=True)
+    valoracion_media = db.Column(db.Float, nullable=True)
     Ubicacion = db.Column(Geometry(geometry_type='POINT', srid=4326, spatial_index=False), nullable=True)
     radioUbicacion = db.Column(db.Integer, nullable=False, default=0)
     telefono = db.Column(db.Integer, nullable=True)

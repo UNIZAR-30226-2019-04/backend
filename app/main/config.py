@@ -14,7 +14,7 @@ BD_NAME = os.getenv('BD_NAME', 'telocam')
 POSTGRES = {
     'user': 'jorgegene',
     'db': 'jorgegene',
-    'pw': 'telocam',
+    'pw': 'jorgegene',
     'host': '127.0.0.1',
     'port': '5432',
 }

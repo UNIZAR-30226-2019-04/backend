@@ -42,14 +42,18 @@ class User(Resource):
     def get(self, public_id):
         """Obtiene un usuario dado su identificador público"""
         user = get_a_user(public_id)
+        # TODO: Revisar, esto solo pasa si user es None (normalmente tendrá valor, aunque sea el de un error)
         if not user:
-            api.abort(404)
+            api.abort(404, "Error del servidor")
         else:
             return user
 
     # TODO: Asegurar que solo el dueño o un administrador puede editar
     @api.doc('Editar un usuario')
-    @api.expect(_user, validate=True)
+    # TODO: ¿Se esperan todos los campos, algunos con null, o solo los que se van a modificar?
+    # @api.expect(_user, validate=True)
+    @api.expect(_user)
+    @api.marshal_with(_user)
     def put(self, public_id):
         """Edita un usuario dado su identificador público"""
         data = request.json
@@ -61,10 +65,14 @@ class User(Resource):
 @api.response(404, 'Usuario no encontrado.')
 class UserProducts(Resource):
     @api.doc('Lista de productos del usuario')
-    @api.marshal_with(_producto)
+    # @api.marshal_with(_producto)
     def get(self, public_id):
         """Obtiene todos los productos de un usuario dado su identificador público"""
-        return get_user_products(public_id)
+        productos = get_user_products(public_id)
+        if productos == 404:
+            api.abort(404, "El usuario no existe")
+        else:
+            return productos
 
 
 @api.route('/<public_id>/confirmar_email/<token>')

@@ -16,33 +16,37 @@ _categorias = CategoriaListaDto.categoriaLista
 class ProductoList(Resource):
     @api.doc('lista_de_productos')
     # @admin_token_required
-    @api.marshal_list_with(_producto, envelope='data')
+    # @api.marshal_list_with(_producto, envelope='data')
     def get(self):
         """Lista todos los productos registrados"""
 
         # Parámetros opcionales
         textobusqueda = request.args.get('textoBusqueda', default=None, type=str)
-        preciomin = request.args.get('preciomin', default=0, type=float)
-        preciomax = request.args.get('preciomax', default=np.inf, type=float)
+        preciomin = request.args.get('preciomin', default=None, type=float)
+        preciomax = request.args.get('preciomax', default=None, type=float)
         # ubicacion = request.args.get('ubicacion', default=None, type=str)
         # radioUbicacion = request.args.get('radioUbicacion', default=0, type=int)
         categorias = request.args.get('categorias', default=None, type=str)
-        valoracionMin = request.args.get('valoracionMin', default=0, type=int)
-        valoracionMax = request.args.get('valoracionMax', default=10, type=int)
-        tipocompra = request.args.get('tipo', default=None, type=enumerate)
-
+        valoracionMin = request.args.get('valoracionMin', default=None, type=int)
+        valoracionMax = request.args.get('valoracionMax', default=None, type=int)
+        tipocompra = request.args.get('tipo', default=None, type=str)
+        print(request)
+        print(request.args)
+        print(tipocompra)
         # Convertir str separada por ';' a array
         if categorias:
             categorias = categorias.split(";")
 
         # Paginación
-        number = request.args.get('number', default=None, type=int)
-        page = request.args.get('page', default=1, type=int)  # Empieza a contar por 1
+        # TODO: ¿Establecer un número por defecto para el número de elementos en cada página?
+        number = request.args.get('number', default=10, type=int)
+        page = request.args.get('page', default=0, type=int)  # Será el número de página por el número de elementos que hay en cada página
 
         # TODO Pasar parámetros y hacer búsqueda
         return search_products(number, page, textobusqueda, preciomin, preciomax, tipocompra, valoracionMin, valoracionMax)
 
-    @api.expect(_producto, validate=True)
+    # @api.expect(_producto, validate=True)
+    @api.expect(_producto)
     @api.response(201, 'Product successfully created.')
     @api.doc('create a new producto')
     def post(self):

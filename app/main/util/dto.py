@@ -15,9 +15,9 @@ class UserDto:
         'quiereEMails': fields.Boolean(description='True si el usuario desea recibir emails, False en caso contrario'),
         'valoracionMedia': fields.Float(description='Valoración media del usuario'),
         'telefono': fields.Integer(description='Teléfono del usuario'),
-        'Imagen_Perfil_Path': fields.String(description='Foto de perfil del usuario'),
-        'Ubicacion': fields.String(description='Ubicación. Formato POINT(<lon> <lat>), ejemplo: \'POINT(3.0 -2.3)\''),
-        'radioUbicacion': fields.Integer(description='Radio en metros de la ubicación')
+        'Imagen_Perfil_Path': fields.String(description='Foto de perfil del usuario')
+        # 'Ubicacion': fields.String(description='Ubicación. Formato POINT(<lon> <lat>), ejemplo: \'POINT(3.0 -2.3)\''),
+        # 'radioUbicacion': fields.Integer(description='Radio en metros de la ubicación')
     })
     user_reg = api.model('user', {
         'nick': fields.String(description='Nick del usuario'),
@@ -50,9 +50,9 @@ class ProductoDto:
         'visualizaciones': fields.Integer(description='numero de visualizaciones del producto'),
         'fecha': fields.DateTime(description='fecha de creacion del producto'),
         'vendedor': fields.Integer(required=True, description='vendedor del producto'),
-        'tipo': fields.Integer(required=True, description='venta, trueque o subasta'),
-        'Ubicacion': fields.String(description='Ubicación. Formato POINT(<lon> <lat>), ejemplo: \'POINT(3.0 -2.3)\''),
-        'radioUbicacion': fields.Integer(description='Radio en metros de la ubicación')
+        'tipo': fields.String(required=True, description='venta, trueque o subasta')
+        # 'Ubicacion': fields.String(description='Ubicación. Formato POINT(<lon> <lat>), ejemplo: \'POINT(3.0 -2.3)\''),
+        # 'radioUbicacion': fields.Integer(description='Radio en metros de la ubicación')
     })
 
 

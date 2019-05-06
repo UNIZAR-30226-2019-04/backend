@@ -5,10 +5,11 @@ from app.main import db
 from app.main.model.usuario import Usuario
 from app.main.model.producto import Producto
 from app.main.model.valoracion import Valoracion
+from app.main.service.generar_email import generateEmail
 from ..config import mailer
 from sqlalchemy import text
 
-from geoalchemy2.types import WKTElement
+# from geoalchemy2.types import WKTElement
 
 
 def save_new_user(data):
@@ -26,7 +27,7 @@ def save_new_user(data):
             # radioUbicacion=data['radioUbicacion'],
         )
         save_changes(new_user)
-        send_confirmation_email(new_user.public_id)
+        send_confirmation_email(new_user)
         return generate_token(new_user)
     elif user_mail:
         response_object = {
@@ -53,8 +54,6 @@ def editar_usuario(public_id, data):
             user.quiereEmails = data['quiereEmails']
         if 'telefono' in data:
             user.telefono = data['telefono']
-        if 'Imagen_Perfil_Path' in data:
-            user.Imagen_Perfil_Path = data['Imagen_Perfil_Path']
         if 'descripcion' in data:
             user.descripcion = data['descripcion']
         # TODO: ¿SE PUEDE EDITAR EL MAIL?
@@ -84,12 +83,11 @@ def editar_usuario(public_id, data):
     else:
         response_object = {
             'status': 'fail',
-            'message': 'User not found.',
+            'message': 'El usuario no existe.',
         }
         return response_object, 404
 
 
-# TODO: Devuelve todos los usuarios de la base
 def get_users():
     return Usuario.query.all()
 
@@ -101,30 +99,30 @@ def get_a_user(public_id):
         response_object = {
             'nick': user.nick,
             'descripcion': user.descripcion,
-            'valoracions_hechas': [],
-            'valoracions_recibidas': [],
+            'valoraciones_hechas': [],
+            'valoraciones_recibidas': [],
             'cajas_productos': [],
         }
 
         id_usr = user.id
         query_args = {}
         # Productos vendidos por el usuario
-        query = "SELECT COUNT(*) FROM \"Producto\" WHERE vendedor = :id AND comprador IS NOT NULL"
+        query = "SELECT COUNT(*) FROM producto WHERE vendedor = :id AND comprador IS NOT NULL"
         query_args['id'] = id_usr
         result = db.engine.execute(text(query), query_args)
         for row in result:
             # row.items() returns an array like [(key0, value0), (key1, value1)]
             for column, value in row.items():
-                response_object['productos_venta'] = value
+                response_object['productos_vendidos'] = value
 
         # Productos comprados por el usuario
-        query = "SELECT COUNT(*) FROM \"Producto\" WHERE comprador = :id"
+        query = "SELECT COUNT(*) FROM producto WHERE comprador = :id"
         result = db.engine.execute(text(query), query_args)
         for row in result:
             # row.items() returns an array like [(key0, value0), (key1, value1)]
             for column, value in row.items():
                 # build up the dictionary
-                response_object['productos_compra'] = value
+                response_object['productos_comprados'] = value
 
         # Productos que el usuario tiene a la venta
         productos = Producto.query.filter_by(vendedor=id_usr).filter_by(comprador=None).all()
@@ -143,13 +141,15 @@ def get_a_user(public_id):
             response_object['cajas_productos'].append(producto)
 
         # Productos en la lista de deseados del usuario
-        query = "SELECT * FROM \"Producto\" AS p, \"Deseados\" as d WHERE p.id = d.producto_id AND d.usuario_id = :id"
+        query = "SELECT p.id, p.\"precioBase\", p.\"precioAux\", p.descripcion, p.titulo, p.visualizaciones, p.fecha, p.vendedor, p.tipo FROM producto AS p, deseados as d WHERE p.id = d.producto_id AND d.usuario_id = :id"
         result = db.engine.execute(text(query), query_args)
         d, a = {}, []
         for row in result:
             # row.items() returns an array like [(key0, value0), (key1, value1)]
             for column, value in row.items():
                 # build up the dictionary
+                if isinstance(value, datetime.datetime):
+                    value = value.strftime('%d/%m/%Y')
                 d = {**d, **{column: value}}
             a.append(d)
         response_object['deseados'] = a
@@ -163,7 +163,7 @@ def get_a_user(public_id):
                 'puntuador': user.nick,
                 'puntuado': Usuario.query.filter_by(id=v.puntuado).first().nick,
             }
-            response_object['valoracions_hechas'].append(valoracion)
+            response_object['valoraciones_hechas'].append(valoracion)
 
         # Valoraciones recibidas por el usuario
         valoraciones_recibidas = Valoracion.query.filter_by(puntuado=id_usr).all()
@@ -174,7 +174,8 @@ def get_a_user(public_id):
                 'puntuador': Usuario.query.filter_by(id=v.puntuador).first().nick,
                 'puntuado': user.nick,
             }
-            response_object['valoracions_recibidas'].append(valoracion)
+            response_object['valoraciones_recibidas'].append(valoracion)
+        #print(response_object)
         return response_object
     else:
         response_object = {
@@ -196,7 +197,33 @@ def get_user_id(nick=None, email=None):
 
 def get_user_products(public_id):
     usuario = Usuario.query.filter_by(public_id=public_id).first()
-    return Producto.query.filter_by(vendedor=usuario.id).all()
+    print(usuario)
+    if usuario:
+        response_object = {
+            'cajas_productos': [],
+        }
+        productos = Producto.query.filter_by(vendedor=usuario.id).all()
+        for p in productos:
+            producto = {
+                'id': p.id,
+                'precioBase': p.precioBase,
+                'precioAux': p.precioAux,
+                'descripcion': p.descripcion,
+                'titulo': p.titulo,
+                'visualizaciones': p.visualizaciones,
+                'fecha': p.fecha.strftime('%d/%m/%Y'),
+                'vendedor': p.vendedor,
+                'tipo': p.tipo,
+            }
+            response_object['cajas_productos'].append(producto)
+        return response_object
+    else:
+        print("NOUSUARIO")
+        response_object = {
+            'status': 'fail',
+            'message': 'El usuario no existe.',
+        }
+        return response_object, 404
 
 
 def generate_token(user):
@@ -218,36 +245,30 @@ def generate_token(user):
         return response_object, 401
 
 
-def send_confirmation_email(public_id):
-    user = get_a_user(public_id)
-    if not user:
-        response_object = {
-            'status': 'fail',
-            'message': 'El usuario no ha sido encontrado.'
-        }
-        return response_object, 404
-
+def send_confirmation_email(user):
+    print("Enviar email")
     try:
         # generate the auth token
         confirmation_token = Usuario.encode_confirmation_token(user.email)
+        html_email = generateEmail(user.nick, confirmation_token)
         mailer.send(
             subject='Bienvenido a Telocam - Confirmación de su correo electrónico',
-            text_content=
-            "Buenas " + user.nombre + " " + user.apellidos + ",\nconfirme su correo electrónico en la siguiente " +
-            "dirección:\n" + confirmation_token + "\nSaludos,\nPaul Hodgetts\nDirector de Telocam",
-            from_email='no-reply@telocam.com',
+            html=html_email,
+            from_email='telocam.soporte@gmail.com',
             to=[user.email]
         )
         response_object = {
             'status': 'success',
             'message': 'Successfully sent.',
         }
-        return response_object, 200
+        print(response_object)
+        return response_object, 201
     except Exception as e:
         response_object = {
             'status': 'fail',
-            'message': 'Some error occurred. Please try again.' + str(e)
+            'message': 'Some error occurred. Please try again.'
         }
+        print(response_object, e)
         return response_object, 401
 
 
@@ -261,16 +282,10 @@ def confirm_user_email(public_id, token):
                 'message': 'E-mail validado.'
             }
             return response_object, 200
-        else:
-            response_object = {
-                'status': 'fail',
-                'message': 'Token incorrecto.'
-            }
-            return response_object, 404
     except Exception as e:
         response_object = {
             'status': 'fail',
-            'message': 'Some error occurred. Please try again.' + str(e)
+            'message': 'Some error occurred. Please try again.'
         }
         return response_object, 401
 

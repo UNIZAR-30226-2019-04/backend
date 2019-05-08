@@ -3,7 +3,6 @@ import jwt
 from app.main.model.blacklist import BlacklistToken
 from ..config import key
 import datetime
-# from geoalchemy2.types import Geometry
 
 
 class Usuario(db.Model):
@@ -19,9 +18,9 @@ class Usuario(db.Model):
     validado = db.Column(db.Boolean, nullable=False, default=False)
     quiereEmails = db.Column(db.Boolean, nullable=False, default=True)
     valoracion_media = db.Column(db.Float, nullable=False, default=0)
-    # TODO: Ubicación
-    # Ubicacion = db.Column(Geometry(geometry_type='POINT', srid=4326, spatial_index=False), nullable=True)
-    # radioUbicacion = db.Column(db.Integer, nullable=False, default=0)
+    latitud = db.Column(db.Float, nullable=True)
+    longitud = db.Column(db.Float, nullable=True)
+    radio_ubicacion = db.Column(db.Float, nullable=False, default=0)
     telefono = db.Column(db.Integer, nullable=True)
     Imagen_Perfil_Path = db.Column(db.String(255), nullable=False, default="/default.jpg")
     borrado = db.Column(db.Boolean, nullable=False, default=False)

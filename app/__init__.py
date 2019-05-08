@@ -8,6 +8,9 @@ from .main.controller.producto_controller import api as product_ns
 from .main.controller.categoria_controller import api as categoria_ns
 from .main.controller.categoria_controller import api1 as categoriaL_ns
 from .main.controller.geocode_controller import api as geocode_ns
+from .main.controller.deseados_controller import api as deseados_ns
+from .main.controller.valoracion_controller import api as valoracion_ns
+from .main.controller.conversacion_controller import api as conversacion_ns
 
 
 blueprint = Blueprint('api', __name__)
@@ -25,3 +28,6 @@ api.add_namespace(product_ns, path='/producto')
 api.add_namespace(categoria_ns, path='/categoria')
 api.add_namespace(categoriaL_ns, path='/categoriaL')
 api.add_namespace(geocode_ns, path='/geocode')
+api.add_namespace(deseados_ns, path='/deseados')
+api.add_namespace(valoracion_ns, path='/valoracion')
+api.add_namespace(conversacion_ns, path='/conversacion')

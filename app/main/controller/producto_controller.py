@@ -24,8 +24,9 @@ class ProductoList(Resource):
         textobusqueda = request.args.get('textoBusqueda', default=None, type=str)
         preciomin = request.args.get('preciomin', default=None, type=float)
         preciomax = request.args.get('preciomax', default=None, type=float)
-        # ubicacion = request.args.get('ubicacion', default=None, type=str)
-        # radioUbicacion = request.args.get('radioUbicacion', default=0, type=int)
+        latitud = request.args.get('latitud', default=None, type=float)
+        longitud = request.args.get('latitud', default=None, type=float)
+        radio = request.args.get('latitud', default=None, type=float)
         categorias = request.args.get('categorias', default=None, type=str)
         valoracionMin = request.args.get('valoracionMin', default=None, type=int)
         valoracionMax = request.args.get('valoracionMax', default=None, type=int)
@@ -36,14 +37,15 @@ class ProductoList(Resource):
         # Convertir str separada por ';' a array
         if categorias:
             categorias = categorias.split(";")
-
+        print(categorias)
         # Paginación
         # TODO: ¿Establecer un número por defecto para el número de elementos en cada página?
         number = request.args.get('number', default=10, type=int)
         page = request.args.get('page', default=0, type=int)  # Será el número de página por el número de elementos que hay en cada página
 
         # TODO Pasar parámetros y hacer búsqueda
-        return search_products(number, page, textobusqueda, preciomin, preciomax, tipocompra, valoracionMin, valoracionMax)
+        return search_products(number, page, textobusqueda, preciomin, preciomax, tipocompra, valoracionMin,
+                               valoracionMax, categorias, latitud, longitud, radio)
 
     # @api.expect(_producto, validate=True)
     @api.expect(_producto)
@@ -60,7 +62,7 @@ class ProductoList(Resource):
 @api.response(404, 'Producto no encontrado.')
 class Product(Resource):
     @api.doc('Obtiene un producto')
-    @api.marshal_with(_producto)
+    # @api.marshal_with(_producto)
     def get(self, id):
         """Obtiene un producto dado su identificador"""
         producto = get_a_product(id)

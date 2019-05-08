@@ -1,14 +1,16 @@
-version: "2"
+version: "3"
 services:
-  web:
+  api:
     build: .
-    command: python manage.py run
+    command: bash -c "rm -rf migrations && python manage.py db init && python manage.py db migrate && python manage.py db upgrade && python manage.py run"
     ports:
-      - "5000:5000"
-    environment:
-      MYSQL_USER: "root"
-      BD_PASWORD: ""
-      BD_NAME: "proyecto_software"
-      SECRET_KEY: "secret-key"
+      - "5001:5000"
+
+    env_file:
+      - .env
+    network_mode: "host"
     volumes:
       - .:/app
+
+volumes:
+    db-data:

@@ -1,11 +1,11 @@
 from flask import request
 from flask_restplus import Resource
-
 from app.main.util.decorator import admin_token_required
 from ..util.dto import UserDto
 from ..util.dto import ProductoDto
 from ..util.dto import AuthDto
-from ..service.user_service import save_new_user, get_a_user, editar_usuario, get_user_products, get_users, confirm_user_email, send_confirmation_email
+from ..service.user_service import save_new_user, get_a_user, editar_usuario, get_user_products, get_users, \
+    confirm_user_email, send_confirmation_email, get_comprados, get_vendidos
 
 api = UserDto.api
 _user = UserDto.user
@@ -53,7 +53,9 @@ class User(Resource):
     # TODO: ¿Se esperan todos los campos, algunos con null, o solo los que se van a modificar?
     # @api.expect(_user, validate=True)
     @api.expect(_user)
-    @api.marshal_with(_user)
+    # @api.marshal_with(_user)
+    @api.response(404, 'Usuario no encontrado.')
+    @api.response(201, 'Usuario editado con éxito.')
     def put(self, public_id):
         """Edita un usuario dado su identificador público"""
         data = request.json
@@ -100,3 +102,15 @@ class UserSendConfirmEmail(Resource):
     def get(self, public_id):
         """Reenviar el correo de confirmación del e-mail un usuario"""
         return send_confirmation_email(public_id)
+
+
+@api.route('/<public_id>/vendidos')
+class ProductosVendidos(Resource):
+    def get(self, public_id):
+        return get_vendidos(public_id)
+
+
+@api.route('/<public_id>/comprados')
+class ProductosVendidos(Resource):
+    def get(self, public_id):
+        return get_comprados(public_id)

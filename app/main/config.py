@@ -8,26 +8,29 @@ USER_AGENT = "Telocam"
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-BD_PASWORD = os.getenv('BD_PASWORD', '')
-BD_NAME = os.getenv('BD_NAME', 'telocam')
+
+POSTGRES_USER = os.getenv('POSTGRES_USER', 'jorgegene')
+POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD', 'jorgegene')
+POSTGRES_DB = os.getenv('POSTGRES_DB', 'jorgegene')
+SECRET_KEY = os.getenv('SECRET_KEY', 'jorgegene')
 
 POSTGRES = {
-    'user': 'jorgegene',
-    'db': 'jorgegene',
-    'pw': 'jorgegene',
-    'host': '127.0.0.1',
+    'user': POSTGRES_USER,
+    'db': POSTGRES_DB,
+    'pw': POSTGRES_PASSWORD,
+    'host': '127.0.0.1',  # docker-compose creates a hostname alias with the service name
     'port': '5432',
 }
 
 mailer = SMTPMailer(
-                host="smtp.unizar.es",
-                port=587,
-                username=719509,
-                password="",  # TODO poner contraseña antes de correr el programa
-                use_tls=True,
-                use_ssl=None,
-                timeout=None
-            )
+    host="smtp.gmail.com",
+    port=587,
+    username="telocam.soporte",
+    password="telocam1234",
+    use_tls=True,
+    use_ssl=None,
+    timeout=None
+)
 
 
 class Config:
@@ -47,7 +50,7 @@ class TestingConfig(Config):
     DEBUG = True
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'postgresql://' + \
-        BD_PASWORD + '@155.210.47.51:15432/telocam_test'
+        POSTGRES_PASSWORD + '@155.210.47.51:15432/telocam_test'
     PRESERVE_CONTEXT_ON_EXCEPTION = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

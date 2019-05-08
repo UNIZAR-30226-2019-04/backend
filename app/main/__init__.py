@@ -16,7 +16,6 @@ def create_app(config_name):
     app = Flask(__name__)
 
     app.config['CORS_HEADERS'] = 'Content-Type'
-
     CORS(app, resources={r"/*": {"origins": "*"}},
          allow_headers="*", methods=["GET", "HEAD", "POST", "PUT", "OPTIONS", "DELETE"])
 

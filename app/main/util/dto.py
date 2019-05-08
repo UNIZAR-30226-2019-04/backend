@@ -61,11 +61,10 @@ class ConversationDto:
         'conversacion', description='conversacion related operations')
     conversacion = api.model('conversacion', {
         'id': fields.Integer(required=True, description='id'),
-        'seller': fields.Integer(required=True, description='seller id'),
-        'buyer': fields.Integer(required=True, description='buyer id'),
-        'seller_email': fields.String(required=True, description='seller email'),
-        'buyer_email': fields.String(required=True, description='buyer email'),
-
+        'vendedor': fields.Integer(required=True, description='id del vendedor'),
+        'email_vendedor': fields.String(required=True, description='seller email'),
+        'comprador': fields.Integer(required=True, description='id del comprador'),
+        'email_comprador': fields.String(required=True, description='buyer email'),
     })
 
 
@@ -74,21 +73,38 @@ class MensajeDto:
         'mensaje', description='mensaje related operations')
     mensaje = api.model('mensaje', {
         'id': fields.Integer(required=True, description='id'),
+        'texto': fields.String(required=True, description='texto'),
+        'fecha': fields.DateTime(required=True, description='fecha de creacion'),
         'conversacion': fields.Integer(required=True, description='conversacion id'),
-        'text': fields.String(required=True, description='text'),
-        'user': fields.String(required=True, description='user'),
-        'created_date': fields.DateTime(required=True, description='created_date'),
-
+        'usuario': fields.String(required=True, description='user'),
     })
 
 
 class AuthDto:
     api = Namespace('auth', description='authentication related operations')
     user_auth = api.model('auth_details', {
-        'email': fields.String(required=True, description='Email o username'),
+        'email': fields.String(required=False, description='Email del usuario'),
+        'nick': fields.String(required=False, description='nick del usuario'),
         'password': fields.String(required=True, description='Contraseña'),
     })
 
 
 class GeocodeDto:
     api = Namespace('geocode', description='Operaciones de geocodificación')
+
+
+class DeseadosDto:
+    api = Namespace('deseados', description='Operaciones de la lista de deseados')
+    deseados = api.model('deseados', {
+        'producto_id': fields.Integer(required=True, description='id del producto')
+    })
+
+
+class ValoracionDto:
+    api = Namespace('valoracion', description='Operaciones de valoraciones')
+    valoracion = api.model('valoracion', {
+        'descripcion': fields.String(required=True, description='descripcion del producto'),
+        'puntuacion': fields.Integer(required=True, description='puntuacion del producto'),
+        'puntuador': fields.Integer(required=False, description='id del usuario puntuador'),
+        'puntuado': fields.Integer(required=True, description='id del producto puntuado')
+    })

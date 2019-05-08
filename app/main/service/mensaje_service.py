@@ -8,9 +8,9 @@ from app.main.model.mensaje import Mensaje
 def save_new_mensaje(data):
 
     new = Mensaje(
-        emisor=data['emisor'],
-        receptor=data['emisor'],
-        text=data['text'],
+        conversacion=data['conversacion'],
+        usuario=data['usuario'],
+        texto=data['texto'],
         fecha=datetime.datetime.utcnow()
     )
     id = save_changes(new)

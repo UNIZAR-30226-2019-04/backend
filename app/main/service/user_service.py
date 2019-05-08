@@ -9,8 +9,6 @@ from app.main.service.generar_email import generateEmail
 from ..config import mailer
 from sqlalchemy import text
 
-# from geoalchemy2.types import WKTElement
-
 
 def save_new_user(data):
     user_nick = Usuario.query.filter_by(nick=data['username']).first()
@@ -21,10 +19,6 @@ def save_new_user(data):
             nick=data['username'],
             email=data['email'],
             password=data['password'],
-            # TODO: Al registrarse se podría añadir la típica checkbox: "Quiero recibir emails..."
-            # quiereEmails=data['quiereEmails'],
-            # Ubicacion=WKTElement(data['Ubicacion'], srid=4326),
-            # radioUbicacion=data['radioUbicacion'],
         )
         save_changes(new_user)
         send_confirmation_email(new_user)
@@ -44,7 +38,7 @@ def save_new_user(data):
 
 
 def editar_usuario(public_id, data):
-    user = Usuario.query.filter_by(public_id=public_id).first()
+    user = Usuario.query.filter_by(public_id=public_id, borrado=False).first()
     if user:
         if 'nombre' in data:
             user.nombre = data['nombre']
@@ -56,7 +50,6 @@ def editar_usuario(public_id, data):
             user.telefono = data['telefono']
         if 'descripcion' in data:
             user.descripcion = data['descripcion']
-        # TODO: ¿SE PUEDE EDITAR EL MAIL?
         if 'email' in data and user.email != data['email']:
             user_mail = Usuario.query.filter_by(email=data['email']).first()
             if user_mail:
@@ -77,9 +70,16 @@ def editar_usuario(public_id, data):
                 return response_object, 409
             else:
                 user.nick = data['nick']
-        # TODO: UBICACIÓN
+        if 'latitud' in data:
+            user.latitud=data['latitud']
+            user.longitud=data['longitud']
+            user.radio_ubicacion=data['radio_ubicacion']
         save_changes(user)
-        return user
+        response_object = {
+            'status': 'success',
+            'message': 'Usuario editado con éxito.',
+        }
+        return response_object, 201
     else:
         response_object = {
             'status': 'fail',
@@ -94,11 +94,14 @@ def get_users():
 
 # Recuperar un usuario dada su id publica
 def get_a_user(public_id):
-    user = Usuario.query.filter_by(public_id=public_id).first()
+    user = Usuario.query.filter_by(public_id=public_id, borrado=False).first()
     if user:
         response_object = {
             'nick': user.nick,
             'descripcion': user.descripcion,
+            'latitud': user.latitud,
+            'longitud': user.longitud,
+            'radio_ubicacion': user.radio_ubicacion,
             'valoraciones_hechas': [],
             'valoraciones_recibidas': [],
             'cajas_productos': [],
@@ -141,7 +144,9 @@ def get_a_user(public_id):
             response_object['cajas_productos'].append(producto)
 
         # Productos en la lista de deseados del usuario
-        query = "SELECT p.id, p.\"precioBase\", p.\"precioAux\", p.descripcion, p.titulo, p.visualizaciones, p.fecha, p.vendedor, p.tipo FROM producto AS p, deseados as d WHERE p.id = d.producto_id AND d.usuario_id = :id"
+        query = "SELECT p.id, p.\"precioBase\", p.\"precioAux\", p.descripcion, p.titulo, p.visualizaciones, " \
+                "p.fecha, p.vendedor, p.tipo FROM producto AS p, deseados as d WHERE p.id = d.producto_id AND " \
+                "d.usuario_id = :id"
         result = db.engine.execute(text(query), query_args)
         d, a = {}, []
         for row in result:
@@ -161,21 +166,22 @@ def get_a_user(public_id):
                 'descripcion': v.descripcion,
                 'puntuacion': v.puntuacion,
                 'puntuador': user.nick,
-                'puntuado': Usuario.query.filter_by(id=v.puntuado).first().nick,
+                'puntuado': v.puntuado,
             }
             response_object['valoraciones_hechas'].append(valoracion)
 
         # Valoraciones recibidas por el usuario
-        valoraciones_recibidas = Valoracion.query.filter_by(puntuado=id_usr).all()
-        for v in valoraciones_recibidas:
-            valoracion = {
-                'descripcion': v.descripcion,
-                'puntuacion': v.puntuacion,
-                'puntuador': Usuario.query.filter_by(id=v.puntuador).first().nick,
-                'puntuado': user.nick,
-            }
-            response_object['valoraciones_recibidas'].append(valoracion)
-        #print(response_object)
+        query = "SELECT v.descripcion, v.puntuacion, u.nick, v.puntuado FROM usuario AS u, producto AS p, " \
+                "valoracion as v WHERE p.vendedor = :id AND p.id = v.puntuado AND u.id = v.puntuador"
+        result = db.engine.execute(text(query), query_args)
+        d, a = {}, []
+        for row in result:
+            # row.items() returns an array like [(key0, value0), (key1, value1)]
+            for column, value in row.items():
+                # build up the dictionary
+                d = {**d, **{column: value}}
+            a.append(d)
+        response_object['valoraciones_recibidas'] = a
         return response_object
     else:
         response_object = {
@@ -202,7 +208,7 @@ def get_user_products(public_id):
         response_object = {
             'cajas_productos': [],
         }
-        productos = Producto.query.filter_by(vendedor=usuario.id).all()
+        productos = Producto.query.filter_by(vendedor=usuario.id, comprador=None, borrado=False).all()
         for p in productos:
             producto = {
                 'id': p.id,
@@ -212,6 +218,9 @@ def get_user_products(public_id):
                 'titulo': p.titulo,
                 'visualizaciones': p.visualizaciones,
                 'fecha': p.fecha.strftime('%d/%m/%Y'),
+                'latitud': p.latitud,
+                'longitud': p.longitud,
+                'radio_ubicacion': p.radio_ubicacion,
                 'vendedor': p.vendedor,
                 'tipo': p.tipo,
             }
@@ -288,6 +297,71 @@ def confirm_user_email(public_id, token):
             'message': 'Some error occurred. Please try again.'
         }
         return response_object, 401
+
+
+def get_comprados(public_id):
+    usuario = Usuario.query.filter_by(public_id=public_id).first()
+    if usuario:
+        response_object = {
+            'cajas_productos': [],
+        }
+        productos = Producto.query.filter(Producto.comprador is not None).filter_by(vendedor=usuario.id).all()
+        for p in productos:
+            producto = {
+                'id': p.id,
+                'precioBase': p.precioBase,
+                'precioAux': p.precioAux,
+                'descripcion': p.descripcion,
+                'titulo': p.titulo,
+                'visualizaciones': p.visualizaciones,
+                'fecha': p.fecha.strftime('%d/%m/%Y'),
+                'vendedor': p.vendedor,
+                'latitud': p.latitud,
+                'longitud': p.longitud,
+                'radio_ubicacion': p.radio_ubicacion,
+                'tipo': p.tipo,
+            }
+            response_object['cajas_productos'].append(producto)
+        return response_object
+    else:
+        response_object = {
+            'status': 'fail',
+            'message': 'El usuario no existe.',
+        }
+        return response_object, 404
+
+
+def get_vendidos(public_id):
+    usuario = Usuario.query.filter_by(public_id=public_id).first()
+    if usuario:
+        response_object = {
+            'cajas_productos': [],
+        }
+        productos = Producto.query.filter(Producto.comprador is not None).filter_by(vendedor=usuario.id).all()
+        for p in productos:
+            producto = {
+                'id': p.id,
+                'precioBase': p.precioBase,
+                'precioAux': p.precioAux,
+                'descripcion': p.descripcion,
+                'titulo': p.titulo,
+                'visualizaciones': p.visualizaciones,
+                'fecha': p.fecha.strftime('%d/%m/%Y'),
+                'latitud': p.latitud,
+                'longitud': p.longitud,
+                'radio_ubicacion': p.radio_ubicacion,
+                'vendedor': p.vendedor,
+                'comprador': p.comprador,
+                'tipo': p.tipo,
+            }
+            response_object['cajas_productos'].append(producto)
+        return response_object
+    else:
+        response_object = {
+            'status': 'fail',
+            'message': 'El usuario no existe.',
+        }
+        return response_object, 404
 
 
 def save_changes(data):

@@ -9,7 +9,11 @@ def insertar_categorias(data):
             nombre=categoria
         )
         save_changes(new_categoria)
-    return {"Respuesta": "Return WIP, checkear manualmente si OK"}
+    response_object = {
+                'status': 'success',
+                'message': 'Categorías creadas',
+            }
+    return response_object, 201
 
 
 def get_all_categorias():

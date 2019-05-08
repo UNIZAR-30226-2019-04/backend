@@ -10,7 +10,7 @@ class Auth:
             print(data)
             # fetch the user data
             user_email = Usuario.query.filter_by(email=data.get('email')).first()
-            user_nick = Usuario.query.filter_by(nick=data.get('email')).first()
+            user_nick = Usuario.query.filter_by(nick=data.get('nick')).first()
             if user_email:
                 user = user_email
             elif user_nick:

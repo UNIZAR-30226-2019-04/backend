@@ -10,8 +10,8 @@ from app.main.service.multimedia_service import save_changes
 
 api = MultimediaDto.api
 
-UPLOAD_FOLDER = '/srv/http/'
-SERVER_ROUTE = 'localhost/'
+UPLOAD_FOLDER = '/var/www/html/'
+SERVER_ROUTE = 'http://155.210.47.51:10080'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4'}
 
 
@@ -47,7 +47,7 @@ class Multimedia(Resource):
                     file_path = str(uuid.uuid4()) + '.' + file_extension  # Random image path
                     file.save(os.path.join(UPLOAD_FOLDER, file_path))
                     new_multimedia = Multimedia(
-                        path=file_path,
+                        path=SERVER_ROUTE + UPLOAD_FOLDER + file_path,
                         tipo=file_extension == "mp4",
                         producto=id_producto
                     )

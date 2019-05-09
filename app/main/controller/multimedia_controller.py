@@ -20,8 +20,7 @@ class Multimedia(Resource):
     @api.response(200, 'OK.')
     def get(self):
         """Devuelve la lista de imágenes."""
-        # Parámetros opcionales
-        usuario = request.args.get('usuario', default=None, type=str)
+        #TODO
 
         return ""#TODO
 

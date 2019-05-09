@@ -109,3 +109,16 @@ class ValoracionDto:
         'puntuador': fields.String(required=False, description='id del usuario puntuador'),
         'puntuado': fields.String(required=True, description='id del usuario puntuado')
     })
+
+
+class MultimediaDto:
+    api = Namespace('multimedia', description='Alojamiento de multimedia')
+    multimedia = api.model('multimedia', {
+        'id': fields.Integer(required=True, description='id del multimedia'),
+        'path': fields.String(required=False, description='ruta del multimedia'),
+        'tipo': fields.Boolean(required=False, description='tipo del multimedia: false imagen, true vídeo'),
+        'producto': fields.String(required=False, description='id del producto del multimedia')
+    })
+    multimedia_post = api.model('multimedia', {
+        'producto': fields.String(required=False, description='id del producto del multimedia')
+    })

@@ -12,7 +12,7 @@ class UserDto:
         'nombre': fields.String(description='Nombre del usuario'),
         'apellidos': fields.String(description='Apellidos del usuario'),
         'email': fields.String(required=True, description='email del usuario'),
-        'quiereEmails': fields.Boolean(description='True si el usuario desea recibir emails, False en caso contrario'),
+        'quiereEMails': fields.Boolean(description='True si el usuario desea recibir emails, False en caso contrario'),
         'valoracionMedia': fields.Float(description='Valoración media del usuario'),
         'telefono': fields.Integer(description='Teléfono del usuario'),
         'Imagen_Perfil_Path': fields.String(description='Foto de perfil del usuario')

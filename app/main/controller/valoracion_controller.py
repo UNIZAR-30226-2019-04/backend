@@ -13,10 +13,10 @@ _valoracion = ValoracionDto.valoracion
 @api.route('/<public_id>')
 class Deseados(Resource):
     @api.expect(_valoracion, validate=True)
-    @api.response(404, 'Usuario o producto no existen.')
+    @api.response(404, 'Usuario no válido.')
     @api.response(201, 'Valoración realizada.')
     @api.response(401, 'Autenticación no válida')
-    @api.doc('Añade una valoración a un producto')
+    @api.doc('Añade una valoración a un usuario')
     def post(self, public_id):
         auth_header = request.headers.get('Authorization')
         if auth_header:

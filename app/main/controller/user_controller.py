@@ -101,8 +101,7 @@ class UserSendConfirmEmail(Resource):
     @api.doc('confirm user email')
     def get(self, public_id):
         """Reenviar el correo de confirmación del e-mail un usuario"""
-        user = get_a_user(public_id)
-        return send_confirmation_email(user)
+        return send_confirmation_email(public_id)
 
 
 @api.route('/<public_id>/vendidos')

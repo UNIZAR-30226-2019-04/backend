@@ -10,7 +10,7 @@ from app.main.service.multimedia_service import save_changes
 
 api = MultimediaDto.api
 
-UPLOAD_FOLDER = '/var/www/html/'
+UPLOAD_FOLDER = '/var/www/html/producto/'
 SERVER_ROUTE = 'http://155.210.47.51:10080'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4'}
 

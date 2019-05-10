@@ -117,8 +117,8 @@ class MultimediaDto:
         'id': fields.Integer(required=True, description='id del multimedia'),
         'path': fields.String(required=False, description='ruta del multimedia'),
         'tipo': fields.Boolean(required=False, description='tipo del multimedia: false imagen, true vídeo'),
-        'producto': fields.String(required=False, description='id del producto del multimedia')
+        'producto': fields.Integer(required=False, description='id del producto del multimedia')
     })
     multimedia_post = api.model('multimedia', {
-        'producto': fields.String(required=False, description='id del producto del multimedia')
+        'producto': fields.Integer(required=False, description='id del producto del multimedia')
     })

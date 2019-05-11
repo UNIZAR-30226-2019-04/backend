@@ -29,7 +29,6 @@ class MultimediaGet(Resource):
 
 @api.route('/<id_producto>')
 class MultimediaPost(Resource):
-    @api.expect(MultimediaDto.multimedia_post)
     @api.response(200, 'OK.')
     @api.response(400, 'Bad request.')
     def post(self, id_producto):

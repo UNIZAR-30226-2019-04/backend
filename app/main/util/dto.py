@@ -119,6 +119,3 @@ class MultimediaDto:
         'tipo': fields.Boolean(required=False, description='tipo del multimedia: false imagen, true vídeo'),
         'producto': fields.Integer(required=False, description='id del producto del multimedia')
     })
-    multimedia_post = api.model('multimedia', {
-        'producto': fields.Integer(required=False, description='id del producto del multimedia')
-    })

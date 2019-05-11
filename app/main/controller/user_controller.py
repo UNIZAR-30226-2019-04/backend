@@ -134,11 +134,11 @@ class ProductosVendidos(Resource):
         return get_comprados(public_id)
 
 
-@api.route('/<public_id>')
+@api.route('/fotoPerfil/<public_id>')
 class FotoPerfil(Resource):
     @api.response(200, 'OK.')
     @api.response(400, 'Bad request.')
-    def post(self, public_id):
+    def put(self, public_id):
         """Sube la imagen de perfil del usuario"""
 
         UPLOAD_FOLDER = '/var/www/html/user/'

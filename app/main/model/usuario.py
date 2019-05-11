@@ -22,7 +22,7 @@ class Usuario(db.Model):
     longitud = db.Column(db.Float, nullable=True)
     radio_ubicacion = db.Column(db.Float, nullable=False, default=0)
     telefono = db.Column(db.Integer, nullable=True)
-    Imagen_Perfil_Path = db.Column(db.String(255), nullable=False, default="http://155.210.47.51:10080/user/default.jpg")
+    Imagen_Perfil_Path = db.Column(db.String(255), nullable=False, default="http://155.210.47.51:10080/user/default.png")
     borrado = db.Column(db.Boolean, nullable=False, default=False)
     descripcion = db.Column(db.Text, nullable=False, default='')
 

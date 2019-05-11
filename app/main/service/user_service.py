@@ -417,6 +417,36 @@ def get_vendidos(public_id):
         return response_object, 404
 
 
+def edit_passwd(public_id, auth, data):
+    user = Usuario.query.filter_by(public_id=public_id, borrado=False).first()
+    if user:
+        resp = Usuario.decode_auth_token(auth)
+        user_token = Usuario.query.filter_by(id=resp).first()
+        if user_token == user:
+            if user.check_password(data['oldpassword']):
+                user.password = data['password']
+                save_changes(user)
+                return {'status': 'success', 'message': 'Contraseña cambiada'}, 201
+            else:
+                response_object = {
+                    'status': 'fail',
+                    'message': 'Contraseña incorrecta.'
+                }
+                return response_object, 401
+        else:
+            response_object = {
+                'status': 'fail',
+                'message': 'Autorización no válida'
+            }
+            return response_object, 401
+    else:
+        response_object = {
+            'status': 'fail',
+            'message': 'El usuario no existe.',
+        }
+        return response_object, 404
+
+
 def save_changes(data):
     db.session.add(data)
     db.session.commit()

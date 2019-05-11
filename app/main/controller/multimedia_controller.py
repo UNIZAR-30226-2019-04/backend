@@ -19,8 +19,8 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4'}
 
 @api.route('/')
 class MultimediaGet(Resource):
-    @api.expect(MultimediaDto.multimedia)
     @api.response(200, 'OK.')
+    @api.marshal_list_with(MultimediaDto.multimedia, envelope='data')
     def get(self):
         """Devuelve la lista de imágenes."""
 

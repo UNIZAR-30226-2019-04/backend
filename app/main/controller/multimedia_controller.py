@@ -7,7 +7,7 @@ import os
 from app.main.model.producto import Producto
 from app.main.model.multimedia import Multimedia
 from app.main.util.dto import MultimediaDto
-from app.main.service.multimedia_service import get_multimedia, save_changes
+from app.main.service.multimedia_service import save_changes
 
 api = MultimediaDto.api
 
@@ -20,10 +20,17 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4'}
 @api.route('/')
 class MultimediaGet(Resource):
     @api.response(200, 'OK.')
+    @api.marshal_list_with(MultimediaDto.multimedia, envelope='data')
     def get(self):
         """Devuelve la lista de imágenes."""
 
-        return get_multimedia()
+        # Parámetros opcionales:
+        producto = request.args.get('producto', default=None, type=int)
+
+        if producto is None:
+            return Multimedia.query.all()
+        else:
+            return Multimedia.query.filter_by(producto=producto).all()
 
 
 @api.route('/<id_producto>')

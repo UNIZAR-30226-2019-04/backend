@@ -5,6 +5,7 @@ from sqlalchemy import text
 from app.main.model.producto import Producto
 from app.main.model.usuario import Usuario
 from app.main.model.pertenece import Pertenece
+from app.main.model.multimedia import Multimedia
 from .. import db
 
 
@@ -85,6 +86,12 @@ def get_a_product(id_producto):
     if producto:
         producto.visualizaciones += 1
         save_changes(producto)
+        fechaexpiracion = producto.fechaexpiracion
+        if fechaexpiracion is not None:
+            fechaexpiracion = fechaexpiracion.strftime('%d/%m/%Y')
+        multi = []
+        for i in Multimedia.query.filter_by(producto=id_producto).all():
+            multi.append({"path": i.path, "tipo": i.tipo})
         response_object = {
             'id': producto.id,
             'precioBase': producto.precioBase,
@@ -93,13 +100,14 @@ def get_a_product(id_producto):
             'titulo': producto.titulo,
             'visualizaciones': producto.visualizaciones,
             'fecha': producto.fecha.strftime('%d/%m/%Y'),
-            'fechaexpiracion': producto.fechaexpiracion.strftime('%d/%m/%Y'),
+            'fechaexpiracion': fechaexpiracion,
             'latitud': producto.latitud,
             'longitud': producto.longitud,
             'radio_ubicacion': producto.radio_ubicacion,
             'vendedor': Usuario.query.filter_by(id=producto.vendedor).first().public_id,
             'tipo': producto.tipo,
-            'categoria': Pertenece.query.filter_by(producto_id=producto.id).first().categoria_nombre
+            'categoria': Pertenece.query.filter_by(producto_id=producto.id).first().categoria_nombre,
+            'multimedia': multi
         }
         return response_object
     else:

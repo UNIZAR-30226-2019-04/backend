@@ -53,13 +53,13 @@ class MultimediaPost(Resource):
                     file_path = str(uuid.uuid4()) + '.' + file_extension  # Random image path
                     file.save(os.path.join(UPLOAD_FOLDER, file_path))
                     new_multimedia = Multimedia(
-                        path=file_path,
+                        path=SERVER_ROUTE + file_path,
                         tipo=file_extension == "mp4",
                         producto=id_producto
                     )
                     save_changes(new_multimedia)
                     return ({'status': 'success', 'message': 'Archivo subido correctamente',
-                             "data": [{"path": file_path}]}), 200
+                             "data": [{"path": SERVER_ROUTE + file_path}]}), 200
                 return ({'status': 'fail', 'error': 'extension not allowed'}), 400
             return ({'status': 'fail', 'error': 'file not allowed'}), 400
         return ({'status': 'fail', 'error': 'product not found'}), 400

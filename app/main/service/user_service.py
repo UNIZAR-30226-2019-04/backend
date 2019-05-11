@@ -2,6 +2,7 @@ import uuid
 import datetime
 
 from app.main import db
+from app.main.model.deseados import Deseados
 from app.main.model.pertenece import Pertenece
 from app.main.model.usuario import Usuario
 from app.main.model.producto import Producto
@@ -97,9 +98,14 @@ def get_users():
 def get_a_user(public_id):
     user = Usuario.query.filter_by(public_id=public_id, borrado=False).first()
     if user:
+        # TODO: MULTIMEDIA REAL
+        multi = [{"path": "http://155.210.47.51:10080/logo.png", "tipo": False},
+                 {"path": "http://155.210.47.51:10080/giphy.mp4", "tipo": True}]
         response_object = {
             'nick': user.nick,
             'descripcion': user.descripcion,
+            'nombre' : user.nombre,
+            'apellidos' : user.apellidos,
             'latitud': user.latitud,
             'longitud': user.longitud,
             'radio_ubicacion': user.radio_ubicacion,
@@ -131,6 +137,9 @@ def get_a_user(public_id):
         # Productos que el usuario tiene a la venta
         productos = Producto.query.filter_by(vendedor=id_usr).filter_by(comprador=None).all()
         for p in productos:
+            deseado = False
+            if Deseados.query.filter_by(producto_id=p.id, usuario_id=user.id).first():
+                deseado = True
             producto = {
                 'id': p.id,
                 'precioBase': p.precioBase,
@@ -141,15 +150,17 @@ def get_a_user(public_id):
                 'fecha': p.fecha.strftime('%d/%m/%Y'),
                 'vendedor': user.public_id,
                 'tipo': p.tipo,
-                'categoria': Pertenece.query.filter_by(producto_id=p.id).first().categoria_nombre
+                'categoria': Pertenece.query.filter_by(producto_id=p.id).first().categoria_nombre,
+                'deseado': deseado,
+                "multimedia": multi
             }
             response_object['cajas_productos'].append(producto)
 
         # Productos en la lista de deseados del usuario
         query = "SELECT p.id, p.\"precioBase\", p.\"precioAux\", p.descripcion, p.titulo, p.visualizaciones, " \
-                "p.fecha, u.public_id AS vendedor, p.tipo, pe.categoria_nombre AS categoria FROM producto AS p, " \
-                "deseados as d, pertenece AS pe, usuario AS u WHERE u.id=p.vendedor AND p.id = d.producto_id AND " \
-                "d.usuario_id = :id AND pe.producto_id = p.id"
+                "p.fecha, u.public_id AS vendedor, p.tipo, pe.categoria_nombre AS categoria, true AS deseado " \
+                "FROM producto p, deseados d, pertenece pe, usuario u WHERE u.id=p.vendedor " \
+                "AND p.id = d.producto_id AND d.usuario_id = :id AND pe.producto_id = p.id AND p.comprador IS NULL"
         result = db.engine.execute(text(query), query_args)
         d, a = {}, []
         for row in result:
@@ -159,6 +170,7 @@ def get_a_user(public_id):
                 if isinstance(value, datetime.datetime):
                     value = value.strftime('%d/%m/%Y')
                 d = {**d, **{column: value}}
+            d["multimedia"] = multi
             a.append(d)
         response_object['deseados'] = a
 
@@ -317,8 +329,11 @@ def get_comprados(public_id):
         response_object = {
             'cajas_productos': [],
         }
-        productos = Producto.query.filter(Producto.comprador is not None).filter_by(vendedor=usuario.id).all()
+        productos = Producto.query.filter(Producto.comprador is not None).filter_by(comprador=usuario.id).all()
         for p in productos:
+            deseado = False
+            if Deseados.query.filter_by(producto_id=p.id, usuario_id=usuario.id).first():
+                deseado = True
             producto = {
                 'id': p.id,
                 'precioBase': p.precioBase,
@@ -332,7 +347,8 @@ def get_comprados(public_id):
                 'longitud': p.longitud,
                 'radio_ubicacion': p.radio_ubicacion,
                 'tipo': p.tipo,
-                'categoria': Pertenece.query.filter_by(producto_id=p.id).first().categoria_nombre
+                'categoria': Pertenece.query.filter_by(producto_id=p.id).first().categoria_nombre,
+                'deseado': deseado
             }
             response_object['cajas_productos'].append(producto)
         return response_object
@@ -344,14 +360,34 @@ def get_comprados(public_id):
         return response_object, 404
 
 
+def get_a_user_to_edit(public_id):
+    user = Usuario.query.filter_by(public_id=public_id, borrado=False).first()
+    response_object = {
+            'nick': user.nick,
+            'descripcion': user.descripcion,
+            'latitud': user.latitud,
+            'longitud': user.longitud,
+            'radio_ubicacion': user.radio_ubicacion,
+            'nombre' : user.nombre,
+            'apellidos' : user.apellidos,
+            'mail' : user.email,
+            'telefono' : user.telefono,
+            'quiere_mails' : user.quiereEmails
+        }
+    return response_object
+
+
 def get_vendidos(public_id):
     usuario = Usuario.query.filter_by(public_id=public_id).first()
     if usuario:
         response_object = {
             'cajas_productos': [],
         }
-        productos = Producto.query.filter(Producto.comprador is not None).filter_by(vendedor=usuario.id).all()
+        productos = Producto.query.filter(Producto.comprador != None).filter_by(vendedor=usuario.id).all()
         for p in productos:
+            deseado = False
+            if Deseados.query.filter_by(producto_id=p.id, usuario_id=usuario.id).first():
+                deseado = True
             producto = {
                 'id': p.id,
                 'precioBase': p.precioBase,
@@ -366,7 +402,8 @@ def get_vendidos(public_id):
                 'vendedor': Usuario.query.filter_by(id=p.vendedor).first().public_id,
                 'comprador': Usuario.query.filter_by(id=p.comprador).first().public_id,
                 'tipo': p.tipo,
-                'categoria': Pertenece.query.filter_by(producto_id=p.id).first().categoria_nombre
+                'categoria': Pertenece.query.filter_by(producto_id=p.id).first().categoria_nombre,
+                'deseado': deseado
             }
             response_object['cajas_productos'].append(producto)
         return response_object

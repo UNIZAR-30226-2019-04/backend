@@ -5,7 +5,7 @@ from ..util.dto import UserDto
 from ..util.dto import ProductoDto
 from ..util.dto import AuthDto
 from ..service.user_service import save_new_user, get_a_user, editar_usuario, get_user_products, get_users, \
-    confirm_user_email, send_confirmation_email, get_comprados, get_vendidos
+    confirm_user_email, send_confirmation_email, get_comprados, get_vendidos, get_a_user_to_edit
 
 api = UserDto.api
 _user = UserDto.user
@@ -31,6 +31,22 @@ class UserList(Resource):
         """Crea un nuevo Usuario"""
         data = request.json
         return save_new_user(data=data)
+
+
+@api.route('/<public_id>/edit')
+# @api.param('public_id', 'The User identifier')
+@api.response(404, 'Usuario no encontrado.')
+class User2(Resource):
+    @api.doc('Obtener un usuario')
+    # @api.marshal_with(_user)
+    def get(self, public_id):
+        """Obtiene un usuario dado su identificador público"""
+        user = get_a_user_to_edit(public_id)
+        # TODO: Revisar, esto solo pasa si user es None (normalmente tendrá valor, aunque sea el de un error)
+        if not user:
+            api.abort(404, "Error del servidor")
+        else:
+            return user
 
 
 @api.route('/<public_id>')

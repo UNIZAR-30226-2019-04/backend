@@ -76,6 +76,8 @@ def editar_usuario(public_id, data):
             user.latitud=data['latitud']
             user.longitud=data['longitud']
             user.radio_ubicacion=data['radio_ubicacion']
+        if 'Imagen_Perfil_Path' in data:
+            user.Imagen_Perfil_Path=data['Imagen_Perfil_Path']
         save_changes(user)
         response_object = {
             'status': 'success',

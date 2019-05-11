@@ -1,3 +1,5 @@
+import os
+
 from flask import request
 from flask_restplus import Resource
 from app.main.util.decorator import admin_token_required
@@ -130,3 +132,36 @@ class ProductosVendidos(Resource):
 class ProductosVendidos(Resource):
     def get(self, public_id):
         return get_comprados(public_id)
+
+
+@api.route('/<public_id>')
+class FotoPerfil(Resource):
+    @api.response(200, 'OK.')
+    @api.response(400, 'Bad request.')
+    def post(self, public_id):
+        """Sube la imagen de perfil del usuario"""
+
+        UPLOAD_FOLDER = '/var/www/html/user/'
+        # UPLOAD_FOLDER = '/srv/http/'
+        SERVER_ROUTE = 'http://155.210.47.51:10080/user/'
+        ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            return ({'status': 'fail', 'error': 'no file'}), 400
+
+        # check if user exists
+        user = get_a_user(public_id)
+        if user:
+            file = request.files['file']
+            if file and '.' in file.filename:
+                file_extension = file.filename.rsplit('.', 1)[1].lower()
+                if file_extension in ALLOWED_EXTENSIONS:
+                    file_path = str(public_id + '.' + file_extension)
+                    file.save(os.path.join(UPLOAD_FOLDER, file_path))
+                    editar_usuario(public_id, data={'Imagen_Perfil_Path': SERVER_ROUTE + file_path})
+                    return ({'status': 'success', 'message': 'Archivo subido correctamente',
+                             "data": [{"path": SERVER_ROUTE + file_path}]}), 200
+                return ({'status': 'fail', 'error': 'extension not allowed'}), 400
+            return ({'status': 'fail', 'error': 'file not allowed'}), 400
+        return ({'status': 'fail', 'error': 'user not found'}), 400

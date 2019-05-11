@@ -13,7 +13,7 @@ api = MultimediaDto.api
 
 UPLOAD_FOLDER = '/var/www/html/producto/'
 #UPLOAD_FOLDER = '/srv/http/'
-SERVER_ROUTE = 'http://155.210.47.51:10080'
+SERVER_ROUTE = 'http://155.210.47.51:10080/producto/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4'}
 
 
@@ -43,13 +43,8 @@ class MultimediaPost(Resource):
         # check if the post request has the file part
         if 'file' not in request.files:
             return ({'status': 'fail', 'error': 'no file'}), 400
-        data = request.json
+
         # check if product exists
-        """
-        if 'producto' not in data:
-            return ({'status': 'fail', 'error': 'need product id'}), 400
-        id_producto = data['producto']
-        """
         if Producto.query.filter_by(id=id_producto, borrado=False).first():
             file = request.files['file']
             if file and '.' in file.filename:

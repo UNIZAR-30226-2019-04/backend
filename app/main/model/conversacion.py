@@ -16,4 +16,4 @@ class Conversacion(db.Model):
     fecha = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
 
     def __repr__(self):
-        return "{} - {}".format(self.seller, self.buyer)
+        return "{} - {}".format(self.vendedor, self.comprador)

@@ -6,7 +6,7 @@ from app.main.model.mensaje import Mensaje
 
 
 def save_new_mensaje(data):
-
+    
     new = Mensaje(
         conversacion=data['conversacion'],
         usuario=data['usuario'],

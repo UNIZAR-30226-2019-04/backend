@@ -35,7 +35,7 @@ class ConversacionList(Resource):
 @api.response(404, 'Conversation not found.')
 class ConversacionListId(Resource):
     @api.doc('get a conversation')
-    @token_required
+    # @token_required
     @api.marshal_list_with(_conversacion, envelope='data')
     def get(self, id):
         """get a user given its identifier"""

@@ -60,11 +60,11 @@ class ConversationDto:
     api = Namespace(
         'conversacion', description='conversacion related operations')
     conversacion = api.model('conversacion', {
-        'id': fields.Integer(required=True, description='id'),
-        'vendedor': fields.Integer(required=True, description='id del vendedor'),
-        'email_vendedor': fields.String(required=True, description='seller email'),
-        'comprador': fields.Integer(required=True, description='id del comprador'),
-        'email_comprador': fields.String(required=True, description='buyer email'),
+        'id': fields.Integer(required=False, description='id'),
+        'vendedor': fields.String(required=True, description='id del vendedor'),
+        'email_vendedor': fields.String(required=False, description='seller email'),
+        'comprador': fields.String(required=True, description='id del comprador'),
+        'email_comprador': fields.String(required=False, description='buyer email'),
     })
 
 
@@ -72,9 +72,9 @@ class MensajeDto:
     api = Namespace(
         'mensaje', description='mensaje related operations')
     mensaje = api.model('mensaje', {
-        'id': fields.Integer(required=True, description='id'),
+        'id': fields.Integer(required=False, description='id'),
         'texto': fields.String(required=True, description='texto'),
-        'fecha': fields.DateTime(required=True, description='fecha de creacion'),
+        'fecha': fields.DateTime(required=False, description='fecha de creacion'),
         'conversacion': fields.Integer(required=True, description='conversacion id'),
         'usuario': fields.String(required=True, description='user'),
     })

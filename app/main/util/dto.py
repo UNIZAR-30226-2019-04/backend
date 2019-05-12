@@ -15,7 +15,10 @@ class UserDto:
         'quiereEmails': fields.Boolean(description='True si el usuario desea recibir emails, False en caso contrario'),
         'valoracionMedia': fields.Float(description='Valoración media del usuario'),
         'telefono': fields.Integer(description='Teléfono del usuario'),
-        'Imagen_Perfil_Path': fields.String(description='Foto de perfil del usuario')
+        'Imagen_Perfil_Path': fields.String(description='Foto de perfil del usuario'),
+        'latitud': fields.Float(description='Latitud ubicación del usuario'),
+        'longitud': fields.Float(description='Latitud ubicación del usuario'),
+        'radio_ubicacion': fields.Float(description='Latitud ubicación del usuario'),
         # 'Ubicacion': fields.String(description='Ubicación. Formato POINT(<lon> <lat>), ejemplo: \'POINT(3.0 -2.3)\''),
         # 'radioUbicacion': fields.Integer(description='Radio en metros de la ubicación')
     })

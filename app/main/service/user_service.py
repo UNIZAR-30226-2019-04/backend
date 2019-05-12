@@ -3,6 +3,7 @@ import datetime
 
 from app.main import db
 from app.main.model.deseados import Deseados
+from app.main.model.multimedia import Multimedia
 from app.main.model.pertenece import Pertenece
 from app.main.model.usuario import Usuario
 from app.main.model.producto import Producto
@@ -73,11 +74,11 @@ def editar_usuario(public_id, data):
             else:
                 user.nick = data['nick']
         if 'latitud' in data:
-            user.latitud=data['latitud']
-            user.longitud=data['longitud']
-            user.radio_ubicacion=data['radio_ubicacion']
+            user.latitud = data['latitud']
+            user.longitud = data['longitud']
+            user.radio_ubicacion = data['radio_ubicacion']
         if 'Imagen_Perfil_Path' in data:
-            user.Imagen_Perfil_Path=data['Imagen_Perfil_Path']
+            user.Imagen_Perfil_Path = data['Imagen_Perfil_Path']
         save_changes(user)
         response_object = {
             'status': 'success',
@@ -100,14 +101,13 @@ def get_users():
 def get_a_user(public_id):
     user = Usuario.query.filter_by(public_id=public_id, borrado=False).first()
     if user:
-        # TODO: MULTIMEDIA REAL
-        multi = [{"path": "http://155.210.47.51:10080/logo.png", "tipo": False},
-                 {"path": "http://155.210.47.51:10080/giphy.mp4", "tipo": True}]
         response_object = {
             'nick': user.nick,
             'descripcion': user.descripcion,
-            'nombre' : user.nombre,
-            'apellidos' : user.apellidos,
+            'nombre': user.nombre,
+            'apellidos': user.apellidos,
+            'valoracion': user.valoracion_media,
+            'imagen_perfil': user.Imagen_Perfil_Path,
             'latitud': user.latitud,
             'longitud': user.longitud,
             'radio_ubicacion': user.radio_ubicacion,
@@ -142,6 +142,9 @@ def get_a_user(public_id):
             deseado = False
             if Deseados.query.filter_by(producto_id=p.id, usuario_id=user.id).first():
                 deseado = True
+            multi = []
+            for i in Multimedia.query.filter_by(producto=p.id).all():
+                multi.append({"path": i.path, "tipo": i.tipo})
             producto = {
                 'id': p.id,
                 'precioBase': p.precioBase,
@@ -172,6 +175,9 @@ def get_a_user(public_id):
                 if isinstance(value, datetime.datetime):
                     value = value.strftime('%d/%m/%Y')
                 d = {**d, **{column: value}}
+            multi = []
+            for i in Multimedia.query.filter_by(producto=d['id']).all():
+                multi.append({"path": i.path, "tipo": i.tipo})
             d["multimedia"] = multi
             a.append(d)
         response_object['deseados'] = a
@@ -227,6 +233,9 @@ def get_user_products(public_id):
         }
         productos = Producto.query.filter_by(vendedor=usuario.id, comprador=None, borrado=False).all()
         for p in productos:
+            multi = []
+            for i in Multimedia.query.filter_by(producto=p.id).all():
+                multi.append({"path": i.path, "tipo": i.tipo})
             producto = {
                 'id': p.id,
                 'precioBase': p.precioBase,
@@ -240,7 +249,8 @@ def get_user_products(public_id):
                 'radio_ubicacion': p.radio_ubicacion,
                 'vendedor': Usuario.query.filter_by(id=p.vendedor).first().public_id,
                 'tipo': p.tipo,
-                'categoria': Pertenece.query.filter_by(producto_id=p.id).first().categoria_nombre
+                'categoria': Pertenece.query.filter_by(producto_id=p.id).first().categoria_nombre,
+                'multimedia': multi
             }
             response_object['cajas_productos'].append(producto)
         return response_object
@@ -336,6 +346,9 @@ def get_comprados(public_id):
             deseado = False
             if Deseados.query.filter_by(producto_id=p.id, usuario_id=usuario.id).first():
                 deseado = True
+            multi = []
+            for i in Multimedia.query.filter_by(producto=p.id).all():
+                multi.append({"path": i.path, "tipo": i.tipo})
             producto = {
                 'id': p.id,
                 'precioBase': p.precioBase,
@@ -350,7 +363,8 @@ def get_comprados(public_id):
                 'radio_ubicacion': p.radio_ubicacion,
                 'tipo': p.tipo,
                 'categoria': Pertenece.query.filter_by(producto_id=p.id).first().categoria_nombre,
-                'deseado': deseado
+                'deseado': deseado,
+                'multimedia': multi
             }
             response_object['cajas_productos'].append(producto)
         return response_object
@@ -370,11 +384,11 @@ def get_a_user_to_edit(public_id):
             'latitud': user.latitud,
             'longitud': user.longitud,
             'radio_ubicacion': user.radio_ubicacion,
-            'nombre' : user.nombre,
-            'apellidos' : user.apellidos,
-            'mail' : user.email,
-            'telefono' : user.telefono,
-            'quiere_mails' : user.quiereEmails
+            'nombre': user.nombre,
+            'apellidos': user.apellidos,
+            'mail': user.email,
+            'telefono': user.telefono,
+            'quiere_mails': user.quiereEmails
         }
     return response_object
 
@@ -390,6 +404,9 @@ def get_vendidos(public_id):
             deseado = False
             if Deseados.query.filter_by(producto_id=p.id, usuario_id=usuario.id).first():
                 deseado = True
+            multi = []
+            for i in Multimedia.query.filter_by(producto=p.id).all():
+                multi.append({"path": i.path, "tipo": i.tipo})
             producto = {
                 'id': p.id,
                 'precioBase': p.precioBase,
@@ -405,7 +422,8 @@ def get_vendidos(public_id):
                 'comprador': Usuario.query.filter_by(id=p.comprador).first().public_id,
                 'tipo': p.tipo,
                 'categoria': Pertenece.query.filter_by(producto_id=p.id).first().categoria_nombre,
-                'deseado': deseado
+                'deseado': deseado,
+                'multimedia': multi
             }
             response_object['cajas_productos'].append(producto)
         return response_object

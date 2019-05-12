@@ -11,7 +11,6 @@ from .main.controller.geocode_controller import api as geocode_ns
 from .main.controller.deseados_controller import api as deseados_ns
 from .main.controller.valoracion_controller import api as valoracion_ns
 from .main.controller.conversacion_controller import api as conversacion_ns
-from .main.controller.multimedia_controller import api as multimedia_ns
 
 
 blueprint = Blueprint('api', __name__)
@@ -32,4 +31,3 @@ api.add_namespace(geocode_ns, path='/geocode')
 api.add_namespace(deseados_ns, path='/deseados')
 api.add_namespace(valoracion_ns, path='/valoracion')
 api.add_namespace(conversacion_ns, path='/conversacion')
-api.add_namespace(multimedia_ns, path='/multimedia')

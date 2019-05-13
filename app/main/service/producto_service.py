@@ -123,12 +123,7 @@ def get_a_product(id_producto):
 def search_products(number=None, page=None, textobusqueda=None, preciomin=None, preciomax=None, tipocompra=None,
                     valoracionMin=None, valoracionMax=None, categorias=None, latitud=None, longitud=None, radio=None,
                     usuario=None):
-    # TODO: MULTIMEDIA REAL
-    multi = [{"path": "http://155.210.47.51:10080/logo.png", "tipo": False},
-             {"path": "http://155.210.47.51:10080/giphy.mp4", "tipo": True}]
-
     query_args = {}
-    numresquery = "SELECT COUNT(*)"
     query = "SELECT p.id, p.\"precioBase\", p.\"precioAux\", p.descripcion, p.titulo, p.visualizaciones, p.fecha, " \
             "v.public_id AS vendedor, p.tipo, pe.categoria_nombre,"
     if usuario:
@@ -145,77 +140,61 @@ def search_products(number=None, page=None, textobusqueda=None, preciomin=None, 
     else:
         query += " false AS deseado"
     query += " FROM producto p, pertenece pe, usuario u, usuario v"
-    numresquery += " FROM producto p, pertenece pe, usuario u, usuario v"
     numpars = 0
     # Sección para joins
     if valoracionMin or valoracionMax:
         query += " WHERE "
-        numresquery += " WHERE "
         if valoracionMin:
             query += "(u.id = p.vendedor AND u.valoracion_media >= :valoracionMin)"
-            numresquery += "(u.id = p.vendedor AND u.valoracion_media >= :valoracionMin)"
             numpars += 1
             query_args['valoracionMin'] = valoracionMin
         if valoracionMax:
             if numpars != 0:
                 query += " AND "
-                numresquery += " AND "
             query += "(u.id = p.vendedor AND u.valoracion_media <= :valoracionMax)"
-            numresquery += "(u.id = p.vendedor AND u.valoracion_media <= :valoracionMax)"
             numpars += 1
             query_args['valoracionMax'] = valoracionMax
     if categorias:
         tam = len(categorias)
         if numpars != 0:
             query += " AND"
-            numresquery += " AND"
         else:
             query += " WHERE"
-            numresquery += " WHERE"
         numpars +=1
         query += " (pe.categoria_nombre = :categoria_nombre0"
-        numresquery += " (pe.categoria_nombre = :categoria_nombre0"
         query_args['categoria_nombre0'] = categorias[0]
         for i in range(1, tam):
             query += " OR pe.categoria_nombre = :categoria_nombre" + str(i)
-            numresquery += " OR pe.categoria_nombre = :categoria_nombre" + str(i)
             query_args['categoria_nombre'+str(i)] = categorias[i]
         query += ")"
-        numresquery += ")"
     # Sección para comprobaciones no join
     if numpars == 0:
         query += " WHERE"
-        numresquery += " WHERE"
     else:
         query += " AND"
-        numresquery += " AND"
     query += " p.borrado = false AND p.comprador IS NULL AND pe.producto_id = p.id AND p.vendedor=v.id"
-    numresquery += " p.borrado = false AND p.comprador IS NULL AND pe.producto_id = p.id AND p.vendedor=v.id"
     # TODO: Pensar bien cómo hacer esta búsqueda, ¿número de apariciones del string?, ¿tiene más peso si aparece en el título?, ...
     if textobusqueda:
         textobusqueda = "%" + textobusqueda + "%"
         query += " AND (p.titulo LIKE :textobusqueda OR p.descripcion LIKE :textobusqueda)"
-        numresquery += " AND (p.titulo LIKE :textobusqueda OR p.descripcion LIKE :textobusqueda)"
         query_args['textobusqueda'] = textobusqueda
     if preciomin:
         query += " AND p.\"precioBase\" >= :preciomin"
-        numresquery += " AND p.\"precioBase\" >= :preciomin"
         query_args['preciomin'] = preciomin
     if preciomax:
         query += " AND p.\"precioBase\" <= :preciomax"
-        numresquery += " AND p.\"precioBase\" <= :preciomax"
         query_args['preciomax'] = preciomax
     if tipocompra:
         query += " AND p.tipo = :tipocompra"
-        numresquery += " AND p.tipo = :tipocompra"
         query_args['tipocompra'] = tipocompra
     if latitud:
         query += " AND calcular_distancia(p.latitud, p.longitud, p.radio_ubicacion, :latitud, :longitud, :radio) <= 0"
-        numresquery += " AND calcular_distancia(p.latitud, p.longitud, p.radio_ubicacion, :latitud, :longitud, :radio) <= 0"
         query_args['latitud'] = latitud
         query_args['longitud'] = longitud
         query_args['radio'] = radio
-    query += " GROUP BY p.id, v.public_id, pe.categoria_nombre LIMIT :number OFFSET :page"
+    query += " GROUP BY p.id, v.public_id, pe.categoria_nombre"
+    numresquery = "SELECT COUNT(*) FROM (" + query + ") AS res"
+    query += " LIMIT :number OFFSET :page"
     query_args['number'] = number
     query_args['page'] = page*number
     print(query)
@@ -228,9 +207,12 @@ def search_products(number=None, page=None, textobusqueda=None, preciomin=None, 
             if isinstance(value, datetime):
                 value = value.strftime('%d/%m/%Y')
             d = {**d, **{column: value}}
+        multi = []
+        for i in Multimedia.query.filter_by(producto=d['id']).all():
+            multi.append({"path": i.path, "tipo": i.tipo})
         d["multimedia"] = multi
         a.append(d)
-    numresquery = "SELECT COUNT(*) FROM (" + query + ") AS res"
+
     result = db.engine.execute(text(numresquery), query_args)
     for row in result:
         # row.items() returns an array like [(key0, value0), (key1, value1)]

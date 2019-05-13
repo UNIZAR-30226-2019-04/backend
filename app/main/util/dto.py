@@ -15,7 +15,10 @@ class UserDto:
         'quiereEmails': fields.Boolean(description='True si el usuario desea recibir emails, False en caso contrario'),
         'valoracionMedia': fields.Float(description='Valoración media del usuario'),
         'telefono': fields.Integer(description='Teléfono del usuario'),
-        'Imagen_Perfil_Path': fields.String(description='Foto de perfil del usuario')
+        'Imagen_Perfil_Path': fields.String(description='Foto de perfil del usuario'),
+        'latitud': fields.Float(description='Latitud ubicación del usuario'),
+        'longitud': fields.Float(description='Latitud ubicación del usuario'),
+        'radio_ubicacion': fields.Float(description='Latitud ubicación del usuario'),
         # 'Ubicacion': fields.String(description='Ubicación. Formato POINT(<lon> <lat>), ejemplo: \'POINT(3.0 -2.3)\''),
         # 'radioUbicacion': fields.Integer(description='Radio en metros de la ubicación')
     })
@@ -60,11 +63,11 @@ class ConversationDto:
     api = Namespace(
         'conversacion', description='conversacion related operations')
     conversacion = api.model('conversacion', {
-        'id': fields.Integer(required=True, description='id'),
-        'vendedor': fields.Integer(required=True, description='id del vendedor'),
-        'email_vendedor': fields.String(required=True, description='seller email'),
-        'comprador': fields.Integer(required=True, description='id del comprador'),
-        'email_comprador': fields.String(required=True, description='buyer email'),
+        'id': fields.Integer(required=False, description='id'),
+        'vendedor': fields.String(required=True, description='id del vendedor'),
+        'email_vendedor': fields.String(required=False, description='seller email'),
+        'comprador': fields.String(required=True, description='id del comprador'),
+        'email_comprador': fields.String(required=False, description='buyer email'),
     })
 
 
@@ -72,9 +75,9 @@ class MensajeDto:
     api = Namespace(
         'mensaje', description='mensaje related operations')
     mensaje = api.model('mensaje', {
-        'id': fields.Integer(required=True, description='id'),
+        'id': fields.Integer(required=False, description='id'),
         'texto': fields.String(required=True, description='texto'),
-        'fecha': fields.DateTime(required=True, description='fecha de creacion'),
+        'fecha': fields.DateTime(required=False, description='fecha de creacion'),
         'conversacion': fields.Integer(required=True, description='conversacion id'),
         'usuario': fields.String(required=True, description='user'),
     })

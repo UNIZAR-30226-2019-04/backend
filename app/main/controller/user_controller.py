@@ -7,7 +7,7 @@ from ..util.dto import UserDto
 from ..util.dto import ProductoDto
 from ..util.dto import AuthDto
 from ..service.user_service import save_new_user, get_a_user, editar_usuario, get_user_products, get_users, \
-    confirm_user_email, send_confirmation_email, get_comprados, get_vendidos, get_a_user_to_edit
+    confirm_user_email, send_confirmation_email, get_comprados, get_vendidos, get_a_user_to_edit, edit_passwd
 
 api = UserDto.api
 _user = UserDto.user
@@ -165,3 +165,18 @@ class FotoPerfil(Resource):
                 return ({'status': 'fail', 'error': 'extension not allowed'}), 400
             return ({'status': 'fail', 'error': 'file not allowed'}), 400
         return ({'status': 'fail', 'error': 'user not found'}), 400
+
+
+@api.route('/<public_id>/editpasswd')
+# @api.param('public_id', 'The User identifier')
+@api.response(404, 'Usuario no encontrado.')
+class UserP(Resource):
+    @api.doc('Obtener un usuario')
+    @api.response(201, 'Contraseña cambiada.')
+    @api.response(401, 'Autenticación no válida')
+    @api.doc('Cambia la contraseña de un usuario')
+    def post(self, public_id):
+        """Obtiene un usuario dado su identificador público"""
+        auth_header = request.headers.get('Authorization')
+        data = request.json
+        return edit_passwd(public_id, auth_header, data=data)

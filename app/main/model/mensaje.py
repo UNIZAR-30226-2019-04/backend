@@ -14,4 +14,4 @@ class Mensaje(db.Model):
     # receptor = db.Column(db.Integer, db.ForeignKey("usuario.id"), primary_key=True)
 
     def __repr__(self):
-        return "<Mensaje '{}'>".format(self.text)
+        return "<Mensaje '{}'>".format(self.texto)

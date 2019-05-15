@@ -46,6 +46,13 @@ def get_all_conversations_id(id):
     print(id)
     return Conversacion.query.filter((Conversacion.vendedor == id) | (Conversacion.comprador == id)).all()
 
+def get_all_conversations_id_id2(id,id2):
+    id = Usuario.query.filter_by(public_id = id).first().id
+    id2 = Usuario.query.filter_by(public_id = id2).first().id
+    print(id)
+    return Conversacion.query.filter(((Conversacion.vendedor == id) & (Conversacion.comprador == id2))|((Conversacion.comprador == id) & (Conversacion.vendedor == id2)) ).all()
+
+
 
 def get_a_conversation(id):
     return Conversacion.query.filter((Conversacion.vendedor == id) | (Conversacion.comprador == id)).first()

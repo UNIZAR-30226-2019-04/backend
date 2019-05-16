@@ -10,7 +10,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 POSTGRES_USER = os.getenv('POSTGRES_USER', 'jorgegene')
-POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD', 'telocam')
+POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD', 'jorgegene')
 POSTGRES_DB = os.getenv('POSTGRES_DB', 'jorgegene')
 SECRET_KEY = os.getenv('SECRET_KEY', 'jorgegene')
 

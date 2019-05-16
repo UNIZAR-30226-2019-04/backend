@@ -6,8 +6,10 @@ import os
 
 from app.main.model.producto import Producto
 from app.main.model.multimedia import Multimedia
+from app.main.model.usuario import Usuario
+from app.main.model.seguir import Seguir
 from app.main.util.dto import MultimediaDto
-from app.main.service.multimedia_service import save_changes
+from app.main.service.multimedia_service import save_changes, enviar_mail
 
 api = MultimediaDto.api
 
@@ -45,7 +47,8 @@ class MultimediaPost(Resource):
             return ({'status': 'fail', 'error': 'no file'}), 400
 
         # check if product exists
-        if Producto.query.filter_by(id=id_producto, borrado=False).first():
+        prod = Producto.query.filter_by(id=id_producto, borrado=False).first()
+        if prod:
             file = request.files['file']
             if file and '.' in file.filename:
                 file_extension = file.filename.rsplit('.', 1)[1].lower()
@@ -58,6 +61,12 @@ class MultimediaPost(Resource):
                         producto=id_producto
                     )
                     save_changes(new_multimedia)
+                    if len(Multimedia.query.filter_by(producto=id_producto).all()) == 2:
+                        vendedor = Usuario.query.filter_by(id=prod.vendedor).first()
+                        seguidores_id = Seguir.query.filter_by(seguido=vendedor.id).all()
+                        for seguidor_id in seguidores_id:
+                            seguidor = Usuario.query.filter_by(id=seguidor_id).first()
+                            enviar_mail(vendedor, prod, seguidor)
                     return ({'status': 'success', 'message': 'Archivo subido correctamente',
                              "data": [{"path": SERVER_ROUTE + file_path}]}), 200
                 return ({'status': 'fail', 'error': 'extension not allowed'}), 400

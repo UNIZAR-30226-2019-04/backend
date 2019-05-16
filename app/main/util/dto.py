@@ -103,6 +103,13 @@ class DeseadosDto:
     })
 
 
+class SeguirDto:
+    api = Namespace('seguir', description='Operaciones de seguir usuarios')
+    seguir = api.model('seguir', {
+        'seguido': fields.String(required=True, description='public_id del usuario seguido')
+    })
+
+
 class ValoracionDto:
     api = Namespace('valoracion', description='Operaciones de valoraciones')
     valoracion = api.model('valoracion', {

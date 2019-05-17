@@ -134,7 +134,7 @@ class ProductosVendidos(Resource):
         return get_comprados(public_id)
 
 
-@api.route('/fotoPerfil/<public_id>')
+@api.route('/<public_id>fotoPerfil/')
 class FotoPerfil(Resource):
     @api.response(200, 'OK.')
     @api.response(400, 'Bad request.')

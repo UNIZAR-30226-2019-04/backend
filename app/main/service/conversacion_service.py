@@ -14,9 +14,10 @@ def save_new_conversation(data):
     comprador = Usuario.query.filter_by(public_id=data['comprador']).first().id
     chat = Conversacion.query.filter_by(
         vendedor = vendedor, comprador=comprador).first()
-    if not chat:
+    chat2 = Conversacion.query.filter_by(
+        vendedor = comprador, comprador = vendedor).first()
+    if not chat or chat2:
         new = Conversacion(
-            id=data['id'],
             vendedor=vendedor,
             comprador=comprador,
             email_vendedor=data['email_vendedor'],
@@ -26,15 +27,24 @@ def save_new_conversation(data):
         save_changes(new)
         response_object = {
             'status': 'success',
-            'message': 'Successfully saved.',
+            'message': 'Creada nueva conversación',
+            'id': new.id,
         }
         return response_object, 200
-    else:
+    elif chat:
         response_object = {
-            'status': 'fail',
-            'message': 'Conversacion already exists. Please Log in.',
+            'status': 'success',
+            'message': 'Conversacion already exists.',
+            'id': chat.id,
         }
-        return response_object, 409
+        return response_object, 200
+    elif chat2:
+        response_object = {
+            'status': 'success',
+            'message': 'Conversacion already exists.',
+            'id': chat2.id,
+        }
+        return response_object, 200        
 
 
 def get_all_conversations():
@@ -45,6 +55,13 @@ def get_all_conversations_id(id):
     id = Usuario.query.filter_by(public_id = id).first().id
     print(id)
     return Conversacion.query.filter((Conversacion.vendedor == id) | (Conversacion.comprador == id)).all()
+
+def get_all_conversations_id_id2(id,id2):
+    id = Usuario.query.filter_by(public_id = id).first().id
+    id2 = Usuario.query.filter_by(public_id = id2).first().id
+    print(id)
+    return Conversacion.query.filter(((Conversacion.vendedor == id) & (Conversacion.comprador == id2))|((Conversacion.comprador == id) & (Conversacion.vendedor == id2)) ).all()
+
 
 
 def get_a_conversation(id):

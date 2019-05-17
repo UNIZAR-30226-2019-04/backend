@@ -6,50 +6,59 @@ from app.main.model.producto import Producto
 from app.main.model.usuario import Usuario
 from app.main.model.pertenece import Pertenece
 from app.main.model.multimedia import Multimedia
+from app.main.model.categoria import Categoria
 from .. import db
 
 
 def insertar_producto(data):
     usuario = Usuario.query.filter_by(public_id=data['vendedor']).first()
     if usuario:
-        new_producto = Producto(
-            precioBase=data['precioBase'],
-            descripcion=data['descripcion'],
-            titulo=data['titulo'],
-            vendedor=usuario.id,
-            tipo=data['tipo']
-        )
-        if 'precioAux' in data:
-            new_producto.precioAux=data['precioAux']
-        if 'fechaexpiracion' in data:
-            new_producto.fechaexpiracion = data['fechaexpiracion']
-        if 'latitud' in data:
-            new_producto.latitud=data['latitud']
-            new_producto.longitud=data['longitud']
-            new_producto.radio_ubicacion=data['radio_ubicacion']
-        else:
-            if usuario.latitud is not None:
-                new_producto.latitud = usuario.latitud
-                new_producto.longitud = usuario.longitud
-                new_producto.radio_ubicacion = usuario.radio_ubicacion
+        categoria = Categoria.query.filter_by(nombre=data['categoria'])
+        if categoria:
+            new_producto = Producto(
+                precioBase=data['precioBase'],
+                descripcion=data['descripcion'],
+                titulo=data['titulo'],
+                vendedor=usuario.id,
+                tipo=data['tipo']
+            )
+            if 'precioAux' in data:
+                new_producto.precioAux=data['precioAux']
+            if 'fechaexpiracion' in data:
+                new_producto.fechaexpiracion = data['fechaexpiracion']
+            if 'latitud' in data:
+                new_producto.latitud=data['latitud']
+                new_producto.longitud=data['longitud']
+                new_producto.radio_ubicacion=data['radio_ubicacion']
             else:
-                response_object = {
-                    'status': 'fail',
-                    'message': 'El usuario o el producto deben tener ubicación.',
-                }
-                return response_object
-        save_changes(new_producto)
-        new_pertenece = Pertenece(
-            producto_id=new_producto.id,
-            categoria_nombre=data['categoria']
-        )
-        save_changes(new_pertenece)
-        response_object = {
-            'status': 'success',
-            'message': 'Producto creado.',
-            'id': new_producto.id,
-        }
-        return response_object
+                if usuario.latitud is not None:
+                    new_producto.latitud = usuario.latitud
+                    new_producto.longitud = usuario.longitud
+                    new_producto.radio_ubicacion = usuario.radio_ubicacion
+                else:
+                    response_object = {
+                        'status': 'fail',
+                        'message': 'El usuario o el producto deben tener ubicación.',
+                    }
+                    return response_object
+            save_changes(new_producto)
+            new_pertenece = Pertenece(
+                producto_id=new_producto.id,
+                categoria_nombre=data['categoria']
+            )
+            save_changes(new_pertenece)
+            response_object = {
+                'status': 'success',
+                'message': 'Producto creado.',
+                'id': new_producto.id,
+            }
+            return response_object
+        else:
+            response_object = {
+                'status': 'fail',
+                'message': 'Categoría no válida.',
+            }
+            return response_object
     else:
         response_object = {
             'status': 'fail',

@@ -186,6 +186,7 @@ def get_a_user(public_id):
         valoraciones_hechas = Valoracion.query.filter_by(puntuador=id_usr).all()
         for v in valoraciones_hechas:
             valoracion = {
+                'titulo': v.titulo,
                 'descripcion': v.descripcion,
                 'puntuacion': v.puntuacion,
                 'puntuador': user.public_id,
@@ -194,17 +195,16 @@ def get_a_user(public_id):
             response_object['valoraciones_hechas'].append(valoracion)
 
         # Valoraciones recibidas por el usuario
-        query = "SELECT v.descripcion, v.puntuacion, u.nick, v.puntuado FROM usuario AS u, producto AS p, " \
-                "valoracion as v WHERE p.vendedor = :id AND p.id = v.puntuado AND u.id = v.puntuador"
-        result = db.engine.execute(text(query), query_args)
-        d, a = {}, []
-        for row in result:
-            # row.items() returns an array like [(key0, value0), (key1, value1)]
-            for column, value in row.items():
-                # build up the dictionary
-                d = {**d, **{column: value}}
-            a.append(d)
-        response_object['valoraciones_recibidas'] = a
+        valoraciones_recibidas = Valoracion.query.filter_by(puntuador=id_usr).all()
+        for v in valoraciones_recibidas:
+            valoracion = {
+                'titulo': v.titulo,
+                'descripcion': v.descripcion,
+                'puntuacion': v.puntuacion,
+                'puntuador': user.public_id,
+                'puntuado': Usuario.query.filter_by(id=v.puntuado).first().public_id,
+            }
+            response_object['valoraciones_recibidas'].append(valoracion)
         return response_object
     else:
         response_object = {

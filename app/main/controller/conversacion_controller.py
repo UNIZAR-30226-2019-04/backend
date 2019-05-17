@@ -4,7 +4,7 @@ from flask import jsonify
 
 from app.main.util.decorator import admin_token_required, token_required
 from ..util.dto import ConversationDto
-from ..service.conversacion_service import save_new_conversation, get_all_conversations, get_a_conversation, get_all_conversations_id
+from ..service.conversacion_service import save_new_conversation, get_all_conversations, get_a_conversation, get_all_conversations_id, get_all_conversations_id_id2
 
 api = ConversationDto.api
 _conversacion = ConversationDto.conversacion
@@ -41,5 +41,20 @@ class ConversacionListId(Resource):
         """get a user given its identifier"""
         print(id)
         conversacion = get_all_conversations_id(id)
+        print(conversacion)
+        return conversacion
+
+@api.route('/all/<id>/<id2>')
+@api.param('id', 'The Buyer identifier')
+@api.param('id2', 'The Seller identifier')
+@api.response(404, 'Conversation not found.')
+class ConversacionListId2(Resource):
+    @api.doc('get a conversation')
+    # @token_required
+    @api.marshal_list_with(_conversacion, envelope='data')
+    def get(self, id, id2):
+        """get a user given its identifier"""
+        print(id)
+        conversacion = get_all_conversations_id_id2(id,id2)
         print(conversacion)
         return conversacion

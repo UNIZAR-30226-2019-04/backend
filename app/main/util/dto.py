@@ -129,3 +129,12 @@ class MultimediaDto:
         'tipo': fields.Boolean(required=False, description='tipo del multimedia: false imagen, true vídeo'),
         'producto': fields.Integer(required=False, description='id del producto del multimedia')
     })
+
+
+class ReporteUsuarioDto:
+    api = Namespace('reporteusr', description='Operaciones de reporte de usuario')
+    reporteusr = api.model('reporteusr', {
+        'descripcion': fields.String(required=True, description='descripcion del reporte'),
+        'tipoReporte': fields.String(required=True, description='tipo de reporte'),
+        'reportado': fields.String(required=True, description='public_id del usuario reportado'),
+    })

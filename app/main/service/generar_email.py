@@ -54,3 +54,12 @@ def generateEmail_2(vendedor, prod, user):
     a_token.string.replace_with(url_token)
 
     return str(soup)
+
+
+def generateEmail_3(user):
+    soup = load_preview("report.html")
+    tag_nombre = soup.find(id="nombre_usuario")
+    tag_nombre.string.replace_with("Hola " + user.nick + ", ")
+    tag_nombre = soup.find(id="introduccion_mail")
+    tag_nombre.string.replace_with(user.nick)
+    return str(soup)

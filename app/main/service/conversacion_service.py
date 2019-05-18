@@ -10,6 +10,7 @@ from .user_service import get_user_id
 
 
 def save_new_conversation(data):
+    print(data)
     vendedor = Usuario.query.filter_by(public_id=data['vendedor']).first().id
     comprador = Usuario.query.filter_by(public_id=data['comprador']).first().id
     chat = Conversacion.query.filter_by(

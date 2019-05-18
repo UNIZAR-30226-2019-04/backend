@@ -16,7 +16,7 @@ def save_new_conversation(data):
         vendedor = vendedor, comprador=comprador).first()
     chat2 = Conversacion.query.filter_by(
         vendedor = comprador, comprador = vendedor).first()
-    if not chat or chat2:
+    if not chat and not chat2:
         new = Conversacion(
             vendedor=vendedor,
             comprador=comprador,

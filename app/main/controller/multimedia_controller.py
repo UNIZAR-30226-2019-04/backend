@@ -13,7 +13,7 @@ api = MultimediaDto.api
 
 UPLOAD_FOLDER = '/var/www/html/producto/'
 #UPLOAD_FOLDER = '/srv/http/'
-SERVER_ROUTE = 'http://155.210.47.51:10080/producto/'
+SERVER_ROUTE = 'http://34.90.11.57:10000/producto/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4'}
 
 

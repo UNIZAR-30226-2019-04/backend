@@ -4,7 +4,7 @@ from .. import socketio
 from ..service.mensaje_service import save_new_mensaje
 
 
-@socketio.on('JOINED', namespace='/mychat')
+@socketio.on('JOINED', namespace = '/mychat')
 def joined(message):
     """Sent by clients when they enter a room.
     A status message is broadcast to all people in the room."""
@@ -15,13 +15,13 @@ def joined(message):
     emit('STATUS', room=room)
 
 
-@socketio.on('SEND_MESSAGE', namespace='/mychat')
+@socketio.on('SEND_MESSAGE', namespace = '/mychat')
 def text(message):
     """Sent by a client when the user entered a new message.
     The message is sent to all people in the room."""
     room = message["room"]
     print(room, message)
-
+    print("AAAAAAAAAAAAAAAAAAAAAA")
     mensaje = {
         'user': message["user"],
         'text': message["text"],
@@ -39,3 +39,8 @@ def left(message):
     leave_room(room)
     print("leaved", room)
     emit('STATUS', room=room)
+
+@socketio.on('mensaje', namespace='/mychat')
+def func(mensaje):
+    print(mensaje)
+    emit('mensaje')

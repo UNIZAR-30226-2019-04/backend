@@ -12,6 +12,7 @@ from .main.controller.deseados_controller import api as deseados_ns
 from .main.controller.valoracion_controller import api as valoracion_ns
 from .main.controller.conversacion_controller import api as conversacion_ns
 
+from .main.controller import events
 
 blueprint = Blueprint('api', __name__)
 

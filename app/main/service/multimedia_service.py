@@ -27,6 +27,7 @@ def enviar_mail(vendedor, prod, user):
         print(response_object, e)
         return response_object, 401
 
+
 def save_changes(data):
     db.session.add(data)
     db.session.commit()

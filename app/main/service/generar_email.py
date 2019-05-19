@@ -63,3 +63,35 @@ def generateEmail_3(user):
     tag_nombre = soup.find(id="introduccion_mail")
     tag_nombre.string.replace_with(user.nick)
     return str(soup)
+
+
+def generateEmail_4(prod, user, session):
+    soup = load_preview("ganaSubasta.html")
+    tag_nombre = soup.find(id="titulo_prod")
+    tag_nombre.string.replace_with(prod.titulo)
+
+    tag_nombre = soup.find(id="nombre_usuario")
+    tag_nombre.string.replace_with("Hola " + user.nick + ", ")
+
+    tag_nombre = soup.find(id="prod_name")
+    tag_nombre.string.replace_with(prod.titulo)
+
+    imagenes = session.query(Multimedia).filter_by(producto=prod.id, tipo=False).all()
+    if imagenes:
+        foto1 = soup.find(id="picture_1")
+        foto1['src'] = imagenes[0].path
+
+        foto2 = soup.find(id="picture_2")
+        foto2['src'] = imagenes[1].path
+
+    tag_descrp = soup.find(id="descripcion")
+    tag_descrp.string.replace_with(prod.descripcion)
+
+    url_token = "http://telocam.com/producto/" + str(prod.id)
+    button = soup.find(id="button")
+    button['href'] = url_token
+    a_token = soup.find(id="url_token")
+    a_token['href'] = url_token
+    a_token.string.replace_with(url_token)
+
+    return str(soup)

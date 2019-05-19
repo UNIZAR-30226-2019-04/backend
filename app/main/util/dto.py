@@ -148,3 +148,7 @@ class PujaDto:
         'valor': fields.Float(required=True, description='valor de la puja'),
         'fecha': fields.DateTime(required=False, description='fecha de la puja'),
     })
+
+
+class PaypalDto:
+    api = Namespace('paypal', description='Compra segura a través de PayPal')

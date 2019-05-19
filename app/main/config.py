@@ -9,9 +9,9 @@ USER_AGENT = "Telocam"
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
-POSTGRES_USER = os.getenv('POSTGRES_USER', 'jorgegene')
-POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD', 'jorgegene')
-POSTGRES_DB = os.getenv('POSTGRES_DB', 'jorgegene')
+POSTGRES_USER = os.getenv('POSTGRES_USER', 'telocam')
+POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD', 'telocam')
+POSTGRES_DB = os.getenv('POSTGRES_DB', 'telocam')
 SECRET_KEY = os.getenv('SECRET_KEY', 'jorgegene')
 
 POSTGRES = {
@@ -68,3 +68,7 @@ config_by_name = dict(
 )
 
 key = Config.SECRET_KEY
+
+
+PAYPAL_CLIENT_ID = "AQPz99DAL-s2n28PLcQ6uCd0bIs4Wj-vqEV-qJlNqGUeSkQbq9rFXhIR02ylVw7jdiTLASUY5KMI5SkG"
+PAYPAL_SECRET = "EFrqRpD-W8kF516mrvTs1wo8WeTx7a5aFXDBrVDXV7ru-huXI8Cw9L8R-3SN1DgxjxgzA7Y3Y8i6S1t7"

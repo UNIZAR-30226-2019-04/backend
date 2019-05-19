@@ -15,6 +15,7 @@ from .main.controller.multimedia_controller import api as multimedia_ns
 from .main.controller.seguir_controller import api as seguir_ns
 from .main.controller.reporteUsuario_controller import api as reporteusr_ns
 from .main.controller.puja_controller import api as puja_ns
+from .main.controller.paypal_controller import api as paypal_ns
 
 
 blueprint = Blueprint('api', __name__)
@@ -39,3 +40,4 @@ api.add_namespace(multimedia_ns, path='/multimedia')
 api.add_namespace(seguir_ns, path='/seguir')
 api.add_namespace(reporteusr_ns, path='/report')
 api.add_namespace(puja_ns, path='/puja')
+api.add_namespace(paypal_ns, path='/paypal')

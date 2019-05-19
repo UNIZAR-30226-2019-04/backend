@@ -350,6 +350,10 @@ def enviar_mail(prod, ganador, session):
         return response_object, 401
 
 
+def marcar_venta_realizada(paypal: bool):
+    print("VENTA REALIZADA, REALIZAR CAMBIOS EN BASE DE DATOS") #TODO
+
+
 def save_changes(data):
     db.session.add(data)
     db.session.commit()

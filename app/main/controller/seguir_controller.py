@@ -10,7 +10,7 @@ _seguir = SeguirDto.seguir
 
 
 @api.route('/<public_id>')
-class Deseados(Resource):
+class Seguir(Resource):
     @api.expect(_seguir, validate=True)
     @api.response(404, 'Usuario no existe.')
     @api.response(201, 'Usuario seguido.')
@@ -26,7 +26,7 @@ class Deseados(Resource):
 
 
 @api.route('/<public_id>/remove')
-class Deseados(Resource):
+class Seguir(Resource):
     @api.expect(_seguir, validate=True)
     @api.response(404, 'Usuario no existe.')
     @api.response(201, 'Usuario eliminado de la lista de seguidos.')

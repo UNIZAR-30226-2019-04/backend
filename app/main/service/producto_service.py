@@ -1,13 +1,20 @@
 import datetime
+import threading
 from datetime import datetime
 
 from sqlalchemy import text
+
+from app.main.config import mailer
 from app.main.model.producto import Producto
 from app.main.model.usuario import Usuario
 from app.main.model.pertenece import Pertenece
 from app.main.model.multimedia import Multimedia
 from app.main.model.categoria import Categoria
+from app.main.model.puja import Puja
+from app.main.service.generar_email import generateEmail_4
 from .. import db
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 
 def insertar_producto(data):
@@ -15,17 +22,25 @@ def insertar_producto(data):
     if usuario:
         categoria = Categoria.query.filter_by(nombre=data['categoria'])
         if categoria:
+            tipo = data['tipo']
+            if tipo == 'subasta' and 'fechaexpiracion' not in data:
+                response_object = {
+                    'status': 'fail',
+                    'message': 'La subasta debe tener fecha de expiración.',
+                }
+                return response_object
             new_producto = Producto(
                 precioBase=data['precioBase'],
                 descripcion=data['descripcion'],
                 titulo=data['titulo'],
                 vendedor=usuario.id,
-                tipo=data['tipo']
+                tipo=tipo
             )
             if 'precioAux' in data:
                 new_producto.precioAux=data['precioAux']
             if 'fechaexpiracion' in data:
-                new_producto.fechaexpiracion = data['fechaexpiracion']
+                expiracion = data['fechaexpiracion']
+                new_producto.fechaexpiracion = expiracion
             if 'latitud' in data:
                 new_producto.latitud=data['latitud']
                 new_producto.longitud=data['longitud']
@@ -47,6 +62,14 @@ def insertar_producto(data):
                 categoria_nombre=data['categoria']
             )
             save_changes(new_pertenece)
+            if tipo == 'subasta':
+                actual = datetime.now()
+                print(expiracion)
+                resta = datetime.strptime(expiracion, '%d/%m/%Y %H:%M:%S')-actual
+                print(actual)
+                print(resta)
+                print(resta.total_seconds())
+                threading.Timer(resta.total_seconds(), fin_subasta, [new_producto.id]).start()
             response_object = {
                 'status': 'success',
                 'message': 'Producto creado.',
@@ -127,14 +150,12 @@ def get_a_product(id_producto):
         return response_object, 404
 
 
-# TODO: Completar con los parámetros que se quiera
-# def search_products(textoBusqueda, preciomin, preciomax, ubicacion, radioUbicacion, valoracionMin, valoracionMax):
 def search_products(number=None, page=None, textobusqueda=None, preciomin=None, preciomax=None, tipocompra=None,
                     valoracionMin=None, valoracionMax=None, categorias=None, latitud=None, longitud=None, radio=None,
                     usuario=None):
     query_args = {}
     query = "SELECT p.id, p.\"precioBase\", p.\"precioAux\", p.descripcion, p.titulo, p.visualizaciones, p.fecha, " \
-            "v.public_id AS vendedor, p.tipo, pe.categoria_nombre,"
+            "v.public_id AS vendedor, p.tipo, pe.categoria_nombre, p.latitud, p.longitud, p.radio_ubicacion,"
     if usuario:
         usr = Usuario.query.filter_by(public_id=usuario).first()
         if usr:
@@ -270,6 +291,63 @@ def add_categorias(producto, data):
             'message': 'Product not found.',
         }
         return response_object, 404
+
+
+def fin_subasta(prod_id):
+    engine = create_engine('postgresql://jorgegene:jorgegene@localhost:5432/jorgegene')
+
+    # create a configured "Session" class
+    Session = sessionmaker(bind=engine)
+
+    # create a Session
+    session = Session()
+    prod = session.query(Producto).filter_by(id=prod_id).first()
+    if prod:
+        query_args = {}
+        query = "SELECT * FROM (SELECT usuario, valor, fecha FROM puja WHERE producto=:id_prod AND valor IN " \
+                "(SELECT MAX(valor) FROM puja WHERE producto=:id_prod)) AS g1 WHERE fecha IN (SELECT MIN(fecha) " \
+                "FROM (SELECT usuario, valor, fecha FROM puja WHERE producto=:id_prod AND valor IN " \
+                "(SELECT MAX(valor) FROM puja WHERE producto=:id_prod)) AS g2)"
+        query_args['id_prod'] = prod_id
+        result = session.execute(text(query), query_args)
+        d, a = {}, []
+        for row in result:
+            # row.items() returns an array like [(key0, value0), (key1, value1)]
+            for column, value in row.items():
+                # build up the dictionary
+                if isinstance(value, datetime):
+                    value = value.strftime('%d/%m/%Y')
+                d = {**d, **{column: value}}
+            a.append(d)
+        ganador = session.query(Usuario).filter_by(id=a[0]['usuario']).first()
+        print(a)
+        enviar_mail(prod, ganador, session)
+        session.close()
+
+
+def enviar_mail(prod, ganador, session):
+    print("Enviar email")
+    try:
+        html_email = generateEmail_4(prod, ganador, session)
+        mailer.send(
+            subject='Has ganado una subasta',
+            html=html_email,
+            from_email='telocam.soporte@gmail.com',
+            to=[ganador.email]
+        )
+        response_object = {
+            'status': 'success',
+            'message': 'Successfully sent.',
+        }
+        print(response_object)
+        return response_object, 201
+    except Exception as e:
+        response_object = {
+            'status': 'fail',
+            'message': 'Some error occurred. Please try again.'
+        }
+        print(response_object, e)
+        return response_object, 401
 
 
 def save_changes(data):

@@ -129,3 +129,22 @@ class MultimediaDto:
         'tipo': fields.Boolean(required=False, description='tipo del multimedia: false imagen, true vídeo'),
         'producto': fields.Integer(required=False, description='id del producto del multimedia')
     })
+
+
+class ReporteUsuarioDto:
+    api = Namespace('reporteusr', description='Operaciones de reporte de usuario')
+    reporteusr = api.model('reporteusr', {
+        'descripcion': fields.String(required=True, description='descripcion del reporte'),
+        'tipoReporte': fields.String(required=True, description='tipo de reporte'),
+        'reportado': fields.String(required=True, description='public_id del usuario reportado'),
+    })
+
+
+class PujaDto:
+    api = Namespace('puja', description='Operaciones de pujas')
+    puja = api.model('puja', {
+        'usuario': fields.String(required=True, descripcion='public_id del usuario'),
+        'producto': fields.Integer(required=True, descripcion='id del producto'),
+        'valor': fields.Float(required=True, description='valor de la puja'),
+        'fecha': fields.DateTime(required=False, description='fecha de la puja'),
+    })

@@ -32,3 +32,20 @@ $actualizar_valoracion_media$ LANGUAGE plpgsql;
 CREATE TRIGGER valoracion_media AFTER INSERT
     ON valoracion FOR EACH ROW
     EXECUTE PROCEDURE actualizar_valoracion_media();
+
+
+
+CREATE OR REPLACE FUNCTION actualizar_puja() RETURNS TRIGGER AS $actualizar_puja$
+  DECLARE
+  BEGIN
+	IF new.valor > (SELECT "precioAux" FROM producto WHERE id = new.producto) THEN 
+		UPDATE producto SET "precioAux"=new.valor WHERE id=new.producto;
+	END IF;
+  RETURN NEW;
+  END;
+$actualizar_puja$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER actualiza_puja AFTER INSERT
+    ON puja FOR EACH ROW
+    EXECUTE PROCEDURE actualizar_puja();

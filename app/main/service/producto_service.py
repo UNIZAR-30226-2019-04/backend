@@ -350,8 +350,19 @@ def enviar_mail(prod, ganador, session):
         return response_object, 401
 
 
-def marcar_venta_realizada(comprador, paypal: bool):
-    print("VENTA REALIZADA, REALIZAR CAMBIOS EN BASE DE DATOS") #TODO
+def marcar_venta_realizada(prod_id, comprador, paypal: bool):
+    producto = Producto.query.filter_by(id=prod_id, borrado=False).first()
+    if producto:
+        producto.comprador = comprador
+        producto.paypal = paypal
+        save_changes(producto)
+        return producto
+    else:
+        response_object = {
+            'status': 'fail',
+            'message': 'Product not found.',
+        }
+        return response_object, 404
 
 
 def save_changes(data):

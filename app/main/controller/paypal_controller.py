@@ -50,6 +50,6 @@ class PaypalVenta(Resource):
 
         print(respuesta.content)
 
-        marcar_venta_realizada(comprador=infopaypal['public_id_comprador'], paypal=True)
+        marcar_venta_realizada(prod_id=id_producto, comprador=infopaypal['public_id_comprador'], paypal=True)
 
         return ({'status': 'success', 'message': 'Venta realizada'}), 200

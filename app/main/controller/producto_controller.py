@@ -5,7 +5,8 @@ import numpy as np
 from app.main.util.decorator import admin_token_required
 from ..util.dto import ProductoDto
 from ..util.dto import CategoriaListaDto
-from ..service.producto_service import insertar_producto, get_product_categories, get_a_product, editar_producto, search_products, add_categorias
+from ..service.producto_service import insertar_producto, get_product_categories, get_a_product, editar_producto, \
+    search_products, add_categorias, marcar_venta_realizada
 
 api = ProductoDto.api
 _producto = ProductoDto.producto
@@ -99,4 +100,13 @@ class Product(Resource):
         """Añadir categorías a un producto dado su identificador"""
         data = request.json
         return add_categorias(id, data=data)
+
+@api.route('/<id>/venta/<public_id_comprador>')
+# @api.param('public_id', 'The User identifier')
+@api.response(404, 'Producto no encontrado.')
+class Product(Resource):
+
+    def post(self, id, public_id_comprador):
+        """Venta de un producto sin paypal (para paypal ir a llamada correspondiente)"""
+        return marcar_venta_realizada(prod_id=id, comprador=public_id_comprador, paypal=False)
 

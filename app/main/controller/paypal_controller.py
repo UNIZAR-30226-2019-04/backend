@@ -25,11 +25,18 @@ class PaypalCompra(Resource):
                 precio = producto['precioBase']
             else:
                 precio = producto['precioAux']
+
+            try:
+                yaComprado = ids[id_producto]
+                return {'id': yaComprado['id_paypal'], 'link': yaComprado['link']}
+            except:
+                pass
+
             respuesta = realizar_compra(id_producto=id_producto, precio=precio,
                                         return_url=URL_SERVIDOR + PUERTO_API + "/paypal/captura/" + str(id_producto))
-            ids.setdefault('id_producto', {'id_paypal': respuesta['id'], 'email': email_vendedor,
-                           'producto_name': producto['titulo'], 'precio': precio,
-                                           'public_id_comprador': public_id_comprador})
+            ids.setdefault('id_producto', {'id_paypal': respuesta['id'], 'link': respuesta['links'][1]['href'],
+                                           'email': email_vendedor, 'producto_name': producto['titulo'],
+                                           'precio': precio, 'public_id_comprador': public_id_comprador})
             return {'id': respuesta['id'], 'link': respuesta['links'][1]['href']}
         else:
             return producto

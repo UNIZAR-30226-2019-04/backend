@@ -1,4 +1,6 @@
 from flask_restplus import Resource
+
+from app.main.config import URL_SERVIDOR, PUERTO_API
 from app.main.model.usuario import Usuario
 from app.main.util.dto import PaypalDto
 from app.main.service.producto_service import get_a_product, marcar_venta_realizada
@@ -7,12 +9,12 @@ from app.main.service.paypal_service import auth_token, realizar_compra, captura
 api = PaypalDto.api
 
 
-@api.route('/venta_producto/<id_producto>')
+@api.route('/venta_producto/<id_producto>/<public_id_comprador>')
 class PaypalCompra(Resource):
     @api.response(200, 'OK.')
     @api.response(400, 'Bad request.')
     @api.response(404, 'Producto no encontrado')
-    def post(self, id_producto):
+    def post(self, id_producto, public_id_comprador):
         """Inicia la compra por Paypal del producto con id id_producto. Devuelve la url de compra y el id de transacción de paypal."""
         producto = get_a_product(id_producto)
 
@@ -24,9 +26,10 @@ class PaypalCompra(Resource):
             else:
                 precio = producto['precioAux']
             respuesta = realizar_compra(id_producto=id_producto, precio=precio,
-                                        return_url="http://155.210.47.51:5000/paypal/captura/" + str(id_producto))
+                                        return_url=URL_SERVIDOR + PUERTO_API + "/paypal/captura/" + str(id_producto))
             ids.setdefault('id_producto', {'id_paypal': respuesta['id'], 'email': email_vendedor,
-                           'producto_name': producto['titulo'], 'precio': precio})
+                           'producto_name': producto['titulo'], 'precio': precio,
+                                           'public_id_comprador': public_id_comprador})
             return {'id': respuesta['id'], 'link': respuesta['links'][1]['href']}
         else:
             return producto
@@ -47,6 +50,6 @@ class PaypalVenta(Resource):
 
         print(respuesta.content)
 
-        marcar_venta_realizada(paypal=True)
+        marcar_venta_realizada(comprador=infopaypal['public_id_comprador'], paypal=True)
 
         return ({'status': 'success', 'message': 'Venta realizada'}), 200

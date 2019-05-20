@@ -2,6 +2,8 @@ import os
 
 from flask import request
 from flask_restplus import Resource
+
+from app.main.config import URL_SERVIDOR, PUERTO_MULTIMEDIA
 from app.main.util.decorator import admin_token_required
 from ..util.dto import UserDto
 from ..util.dto import ProductoDto
@@ -143,7 +145,7 @@ class FotoPerfil(Resource):
 
         UPLOAD_FOLDER = '/var/www/html/user/'
         # UPLOAD_FOLDER = '/srv/http/'
-        SERVER_ROUTE = 'http://155.210.47.51:10080/user/'
+        SERVER_ROUTE = URL_SERVIDOR + PUERTO_MULTIMEDIA + ':10080/user/'
         ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
         # check if the post request has the file part

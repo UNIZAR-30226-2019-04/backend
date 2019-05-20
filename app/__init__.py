@@ -17,6 +17,7 @@ from .main.controller.reporteUsuario_controller import api as reporteusr_ns
 from .main.controller.puja_controller import api as puja_ns
 from .main.controller.paypal_controller import api as paypal_ns
 
+from .main.controller import events
 
 blueprint = Blueprint('api', __name__)
 

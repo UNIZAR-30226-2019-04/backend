@@ -9,9 +9,9 @@ USER_AGENT = "Telocam"
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
-POSTGRES_USER = os.getenv('POSTGRES_USER', 'telocam')
-POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD', 'telocam')
-POSTGRES_DB = os.getenv('POSTGRES_DB', 'telocam')
+POSTGRES_USER = os.getenv('POSTGRES_USER', 'postgres')
+POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD', 'postgres')
+POSTGRES_DB = os.getenv('POSTGRES_DB', 'postgres')
 SECRET_KEY = os.getenv('SECRET_KEY', 'jorgegene')
 
 POSTGRES = {

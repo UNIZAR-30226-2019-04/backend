@@ -9,7 +9,7 @@ class Mensaje(db.Model):
     texto = db.Column(db.Text, nullable=False)
     fecha = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     conversacion = db.Column(db.Integer, db.ForeignKey("conversacion.id", ondelete='CASCADE'), nullable=False)
-    usuario = db.Column(db.String(20), nullable=False)
+    usuario = db.Column(db.String(100), nullable=False)
     # emisor = db.Column(db.Integer, db.ForeignKey("usuario.id"), primary_key=True)
     # receptor = db.Column(db.Integer, db.ForeignKey("usuario.id"), primary_key=True)
 

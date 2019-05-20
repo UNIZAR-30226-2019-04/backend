@@ -1,6 +1,6 @@
 
 const
 	io=require("socket.io-client"),
-	ioClient = io.connect("http://localhost:5000");
+	ioClient = io.connect("http://34.90.77.95:5000");
 
-ioClient.on("seq-num",(msg) => console.info(msg));
+ioClient.emit("mensaje",{mensaje: "hola"});

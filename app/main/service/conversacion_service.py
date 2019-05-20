@@ -10,13 +10,14 @@ from .user_service import get_user_id
 
 
 def save_new_conversation(data):
+    print("HOLA")
     vendedor = Usuario.query.filter_by(public_id=data['vendedor']).first().id
     comprador = Usuario.query.filter_by(public_id=data['comprador']).first().id
     chat = Conversacion.query.filter_by(
         vendedor = vendedor, comprador=comprador).first()
     chat2 = Conversacion.query.filter_by(
         vendedor = comprador, comprador = vendedor).first()
-    if not chat or chat2:
+    if not chat and not chat2:
         new = Conversacion(
             vendedor=vendedor,
             comprador=comprador,

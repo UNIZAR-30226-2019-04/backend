@@ -18,7 +18,7 @@ POSTGRES = {
     'user': POSTGRES_USER,
     'db': POSTGRES_DB,
     'pw': POSTGRES_PASSWORD,
-    'host': '127.0.0.1',  # docker-compose creates a hostname alias with the service name
+    'host': 'postgres',  # docker-compose creates a hostname alias with the service name
     'port': '5432',
 }
 

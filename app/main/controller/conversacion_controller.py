@@ -15,14 +15,14 @@ class ConversacionList(Resource):
     @api.doc('list_of_conversations')
     # @admin_token_required
     @api.marshal_list_with(_conversacion, envelope='data')
-    @token_required
+    #@token_required
     def get(self):
         """List all registered users"""
         return get_all_conversations()
 
     @api.expect(_conversacion, validate=True)
     @api.response(201, 'conversation successfully created.')
-    @token_required
+    #@token_required
     @api.doc('create a new conversation')
     def post(self):
         """Creates a new User """

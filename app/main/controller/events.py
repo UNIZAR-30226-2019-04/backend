@@ -23,8 +23,8 @@ def text(message):
     print(room, message)
     print("AAAAAAAAAAAAAAAAAAAAAA")
     mensaje = {
-        'user': message["user"],
-        'text': message["text"],
+        'usuario': message["usuario"],
+        'texto': message["texto"],
         'conversacion': message["conversacion"]
     }
     save_new_mensaje(data=mensaje)

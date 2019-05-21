@@ -67,7 +67,8 @@ class Product(Resource):
     # @api.marshal_with(_producto)
     def get(self, id):
         """Obtiene un producto dado su identificador"""
-        producto = get_a_product(id)
+        public_id = request.args.get('usuario', default=None, type=str)
+        producto = get_a_product(id, public_id)
         if not producto:
             api.abort(404)
         else:
@@ -100,6 +101,7 @@ class Product(Resource):
         """Añadir categorías a un producto dado su identificador"""
         data = request.json
         return add_categorias(id, data=data)
+
 
 @api.route('/<id>/venta/<public_id_comprador>')
 # @api.param('public_id', 'The User identifier')

@@ -5,13 +5,15 @@ from datetime import datetime
 from sqlalchemy import text
 
 from app.main.config import mailer
+from app.main.model.deseados import Deseados
 from app.main.model.producto import Producto
 from app.main.model.usuario import Usuario
 from app.main.model.pertenece import Pertenece
 from app.main.model.multimedia import Multimedia
 from app.main.model.categoria import Categoria
+from app.main.model.categoriaVisitada import CategoriaVisitada
 from app.main.model.puja import Puja
-from app.main.service.generar_email import generateEmail_4
+from app.main.service.generar_email import generateEmail_4, generateEmail_5
 from .. import db
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -111,19 +113,37 @@ def get_products():
     return Producto.query.all()
 
 
-# TODO: Formatear la fecha, quizá sea necesario hacer la consulta a mano
-def get_a_product(id_producto):
+def get_a_product(id_producto, visitante=None):
     producto = Producto.query.filter_by(id=id_producto, borrado=False).first()
 
     if producto:
+        deseado = False
+        categoria = Pertenece.query.filter_by(producto_id=producto.id).first().categoria_nombre
         producto.visualizaciones += 1
         save_changes(producto)
         fechaexpiracion = producto.fechaexpiracion
         if fechaexpiracion is not None:
-            fechaexpiracion = fechaexpiracion.strftime('%d/%m/%Y')
+            fechaexpiracion = fechaexpiracion.strftime("%d/%m/%Y, %H:%M:%S")
         multi = []
         for i in Multimedia.query.filter_by(producto=id_producto).all():
             multi.append({"path": i.path, "tipo": i.tipo})
+        if visitante:
+            user = Usuario.query.filter_by(public_id=visitante).first()
+            if user:
+                catvis = CategoriaVisitada.query.filter_by(usuario=user.id, categoria_nombre=categoria).first()
+                if catvis:
+                    catvis.veces += 1
+                else:
+                    catvis = CategoriaVisitada(usuario=user.id, categoria_nombre=categoria)
+                save_changes(catvis)
+                if Deseados.query.filter_by(producto_id=producto.id, usuario_id=user.id).first():
+                    deseado = True
+            else:
+                response_object = {
+                    'status': 'fail',
+                    'message': 'Usuario no encontrado.',
+                }
+                return response_object, 404
         response_object = {
             'id': producto.id,
             'precioBase': producto.precioBase,
@@ -138,8 +158,9 @@ def get_a_product(id_producto):
             'radio_ubicacion': producto.radio_ubicacion,
             'vendedor': Usuario.query.filter_by(id=producto.vendedor).first().public_id,
             'tipo': producto.tipo,
-            'categoria': Pertenece.query.filter_by(producto_id=producto.id).first().categoria_nombre,
-            'multimedia': multi
+            'categoria': categoria,
+            'multimedia': multi,
+            'deseado': deseado
         }
         return response_object
     else:
@@ -319,9 +340,11 @@ def fin_subasta(prod_id):
                     value = value.strftime('%d/%m/%Y')
                 d = {**d, **{column: value}}
             a.append(d)
-        ganador = session.query(Usuario).filter_by(id=a[0]['usuario']).first()
-        print(a)
-        enviar_mail(prod, ganador, session)
+        if a:
+            ganador = session.query(Usuario).filter_by(id=a[0]['usuario']).first()
+            enviar_mail(prod, ganador, session)
+        else:
+            enviar_aviso_vendedor(prod, session)
         session.close()
 
 
@@ -334,6 +357,32 @@ def enviar_mail(prod, ganador, session):
             html=html_email,
             from_email='telocam.soporte@gmail.com',
             to=[ganador.email]
+        )
+        response_object = {
+            'status': 'success',
+            'message': 'Successfully sent.',
+        }
+        print(response_object)
+        return response_object, 201
+    except Exception as e:
+        response_object = {
+            'status': 'fail',
+            'message': 'Some error occurred. Please try again.'
+        }
+        print(response_object, e)
+        return response_object, 401
+
+
+def enviar_aviso_vendedor(prod, session):
+    print("Enviar email")
+    try:
+        vendedor = session.query(Usuario).filter_by(id=prod.vendedor).first()
+        html_email = generateEmail_5(prod, vendedor, session)
+        mailer.send(
+            subject='Subasta sin pujas',
+            html=html_email,
+            from_email='telocam.soporte@gmail.com',
+            to=[vendedor.email]
         )
         response_object = {
             'status': 'success',

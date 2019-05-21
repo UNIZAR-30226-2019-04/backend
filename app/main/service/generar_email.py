@@ -95,3 +95,20 @@ def generateEmail_4(prod, user, session):
     a_token.string.replace_with(url_token)
 
     return str(soup)
+
+
+def generateEmail_5(prod, user, session):
+    soup = load_preview("noPujas.html")
+
+    tag_nombre = soup.find(id="nombre_usuario")
+    tag_nombre.string.replace_with("Hola " + user.nick + ", ")
+
+    tag_nombre = soup.find(id="prod_name")
+    tag_nombre.string.replace_with(prod.titulo)
+
+    url_token = "http://telocam.com/producto/" + str(prod.id)
+    a_token = soup.find(id="url_token")
+    a_token['href'] = url_token
+    a_token.string.replace_with(url_token)
+
+    return str(soup)

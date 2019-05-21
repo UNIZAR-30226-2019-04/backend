@@ -62,6 +62,38 @@ def dejar_seguir(user_id, auth, data):
         return response_object, 401
 
 
+def seguidos(user_pid):
+    user = Usuario.query.filter_by(public_id=user_pid).first()
+    if user:
+        segs = Seguir.query.filter_by(seguidor=user.id).all()
+        resp = []
+        for seg in segs:
+            resp.append({'seguido': Usuario.query.filter_by(id=seg.seguido).first().public_id})
+        return resp
+    else:
+        response_object = {
+            'status': 'fail',
+            'message': 'Usuario no válido',
+        }
+        return response_object, 404
+
+
+def seguidores(user_pid):
+    user = Usuario.query.filter_by(public_id=user_pid).first()
+    if user:
+        segs = Seguir.query.filter_by(seguido=user.id).all()
+        resp = []
+        for seg in segs:
+            resp.append({'seguidor': Usuario.query.filter_by(id=seg.seguidor).first().public_id})
+        return resp
+    else:
+        response_object = {
+            'status': 'fail',
+            'message': 'Usuario no válido',
+        }
+        return response_object, 404
+
+
 def save_changes(data):
     db.session.add(data)
     db.session.commit()

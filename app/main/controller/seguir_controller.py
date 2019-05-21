@@ -2,7 +2,7 @@ from flask import request
 from flask_restplus import Resource
 from app.main.util.dto import SeguirDto
 from app.main.util.decorator import admin_token_required
-from app.main.service.seguir_service import save_new_seguir, dejar_seguir
+from app.main.service.seguir_service import save_new_seguir, dejar_seguir, seguidores, seguidos
 
 
 api = SeguirDto.api
@@ -39,3 +39,19 @@ class Seguir(Resource):
             return dejar_seguir(public_id, auth_header, data=data)
         else:
             api.abort(401, "Se necesita autorización")
+
+
+@api.route('/<public_id>/seguidos')
+class Seguir(Resource):
+    @api.response(404, 'Usuario no existe.')
+    @api.doc('Lista los usuarios seguidos')
+    def get(self, public_id):
+        return seguidos(public_id)
+
+
+@api.route('/<public_id>/seguidores')
+class Seguir(Resource):
+    @api.response(404, 'Usuario no existe.')
+    @api.doc('Lista los seguidores del usuario')
+    def get(self, public_id):
+        return seguidores(public_id)

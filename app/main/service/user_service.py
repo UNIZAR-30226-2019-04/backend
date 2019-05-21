@@ -224,18 +224,31 @@ def get_user_id(nick=None, email=None):
         raise ValueError('Expected either nick or email args')
 
 
-def get_user_products(public_id):
+def get_user_products(public_id, visitante=None):
     usuario = Usuario.query.filter_by(public_id=public_id).first()
+    user = None
     print(usuario)
     if usuario:
         response_object = {
             'cajas_productos': [],
         }
+        if visitante:
+            user = Usuario.query.filter_by(public_id=visitante).first()
+            if not user:
+                response_object = {
+                    'status': 'fail',
+                    'message': 'Usuario no encontrado.',
+                }
+                return response_object, 404
         productos = Producto.query.filter_by(vendedor=usuario.id, comprador=None, borrado=False).all()
         for p in productos:
+            deseado = False
             multi = []
             for i in Multimedia.query.filter_by(producto=p.id).all():
                 multi.append({"path": i.path, "tipo": i.tipo})
+            if user:
+                if Deseados.query.filter_by(producto_id=p.id, usuario_id=user.id).first():
+                        deseado = True
             producto = {
                 'id': p.id,
                 'precioBase': p.precioBase,
@@ -250,7 +263,8 @@ def get_user_products(public_id):
                 'vendedor': Usuario.query.filter_by(id=p.vendedor).first().public_id,
                 'tipo': p.tipo,
                 'categoria': Pertenece.query.filter_by(producto_id=p.id).first().categoria_nombre,
-                'multimedia': multi
+                'multimedia': multi,
+                'deseado': deseado
             }
             response_object['cajas_productos'].append(producto)
         return response_object
@@ -335,17 +349,27 @@ def confirm_user_email(public_id, token):
         return response_object, 401
 
 
-def get_comprados(public_id):
+def get_comprados(public_id, visitante=None):
     usuario = Usuario.query.filter_by(public_id=public_id).first()
+    user = None
     if usuario:
         response_object = {
             'cajas_productos': [],
         }
+        if visitante:
+            user = Usuario.query.filter_by(public_id=visitante).first()
+            if not user:
+                response_object = {
+                    'status': 'fail',
+                    'message': 'Usuario no encontrado.',
+                }
+                return response_object, 404
         productos = Producto.query.filter(Producto.comprador is not None).filter_by(comprador=usuario.id).all()
         for p in productos:
             deseado = False
-            if Deseados.query.filter_by(producto_id=p.id, usuario_id=usuario.id).first():
-                deseado = True
+            if user:
+                if Deseados.query.filter_by(producto_id=p.id, usuario_id=user.id).first():
+                    deseado = True
             multi = []
             for i in Multimedia.query.filter_by(producto=p.id).all():
                 multi.append({"path": i.path, "tipo": i.tipo})
@@ -393,17 +417,27 @@ def get_a_user_to_edit(public_id):
     return response_object
 
 
-def get_vendidos(public_id):
+def get_vendidos(public_id, visitante=None):
     usuario = Usuario.query.filter_by(public_id=public_id).first()
+    user = None
     if usuario:
         response_object = {
             'cajas_productos': [],
         }
+        if visitante:
+            user = Usuario.query.filter_by(public_id=visitante).first()
+            if not user:
+                response_object = {
+                    'status': 'fail',
+                    'message': 'Usuario no encontrado.',
+                }
+                return response_object, 404
         productos = Producto.query.filter(Producto.comprador != None).filter_by(vendedor=usuario.id).all()
         for p in productos:
             deseado = False
-            if Deseados.query.filter_by(producto_id=p.id, usuario_id=usuario.id).first():
-                deseado = True
+            if user:
+                if Deseados.query.filter_by(producto_id=p.id, usuario_id=user.id).first():
+                    deseado = True
             multi = []
             for i in Multimedia.query.filter_by(producto=p.id).all():
                 multi.append({"path": i.path, "tipo": i.tipo})

@@ -90,7 +90,8 @@ class UserProducts(Resource):
     # @api.marshal_with(_producto)
     def get(self, public_id):
         """Obtiene todos los productos de un usuario dado su identificador público"""
-        productos = get_user_products(public_id)
+        visitante = request.args.get('usuario', default=None, type=str)
+        productos = get_user_products(public_id, visitante)
         if productos == 404:
             api.abort(404, "El usuario no existe")
         else:
@@ -127,13 +128,15 @@ class UserSendConfirmEmail(Resource):
 @api.route('/<public_id>/vendidos')
 class ProductosVendidos(Resource):
     def get(self, public_id):
-        return get_vendidos(public_id)
+        visitante = request.args.get('usuario', default=None, type=str)
+        return get_vendidos(public_id, visitante)
 
 
 @api.route('/<public_id>/comprados')
 class ProductosVendidos(Resource):
     def get(self, public_id):
-        return get_comprados(public_id)
+        visitante = request.args.get('usuario', default=None, type=str)
+        return get_comprados(public_id, visitante)
 
 
 @api.route('/<public_id>fotoPerfil/')

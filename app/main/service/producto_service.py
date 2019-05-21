@@ -353,10 +353,18 @@ def enviar_mail(prod, ganador, session):
 def marcar_venta_realizada(prod_id, comprador, paypal: bool):
     producto = Producto.query.filter_by(id=prod_id, borrado=False).first()
     if producto:
-        producto.comprador = comprador
-        producto.paypal = paypal
-        save_changes(producto)
-        return producto
+        user = Usuario.query.filter_by(public_id=comprador).first()
+        if user:
+            producto.comprador = user.id
+            producto.paypal = paypal
+            save_changes(producto)
+            return producto
+        else:
+            response_object = {
+                'status': 'fail',
+                'message': 'User not found.',
+            }
+            return response_object, 404
     else:
         response_object = {
             'status': 'fail',

@@ -9,9 +9,9 @@ class Conversacion(db.Model):
     __tablename__ = "conversacion"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    vendedor = db.Column(db.Integer, db.ForeignKey("usuario.id", ondelete='CASCADE'), nullable=False)
+    vendedor = db.Column(db.String(100), db.ForeignKey("usuario.public_id", ondelete='CASCADE'), nullable=False)
     email_vendedor = db.Column(db.String(65), unique=False, nullable=False)
-    comprador = db.Column(db.Integer, db.ForeignKey("usuario.id", ondelete='CASCADE'), nullable=False)
+    comprador = db.Column(db.String(100), db.ForeignKey("usuario.public_id", ondelete='CASCADE'), nullable=False)
     email_comprador = db.Column(db.String(65), unique=False, nullable=False)
     fecha = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
 

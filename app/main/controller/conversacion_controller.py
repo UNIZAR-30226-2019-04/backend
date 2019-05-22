@@ -3,12 +3,12 @@ from flask_restplus import Resource
 from flask import jsonify
 
 from app.main.util.decorator import admin_token_required, token_required
-from ..util.dto import ConversationDto
+from ..util.dto import ConversationDto, Conversation_imagenDto
 from ..service.conversacion_service import save_new_conversation, get_all_conversations, get_a_conversation, get_all_conversations_id, get_all_conversations_id_id2
 
 api = ConversationDto.api
 _conversacion = ConversationDto.conversacion
-
+_conversacion_imagen = Conversation_imagenDto.conversacion
 
 @api.route('/')
 class ConversacionList(Resource):
@@ -36,7 +36,7 @@ class ConversacionList(Resource):
 class ConversacionListId(Resource):
     @api.doc('get a conversation')
     # @token_required
-    @api.marshal_list_with(_conversacion, envelope='data')
+    @api.marshal_list_with(_conversacion_imagen, envelope='data')
     def get(self, id):
         """get a user given its identifier"""
         print(id)

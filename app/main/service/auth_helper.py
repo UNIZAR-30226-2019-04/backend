@@ -8,6 +8,7 @@ class Auth:
     def login_user(data):
         try:
             print(data)
+            user = None
             # fetch the user data
             user_email = Usuario.query.filter_by(email=data.get('email')).first()
             user_nick = Usuario.query.filter_by(nick=data.get('nick')).first()

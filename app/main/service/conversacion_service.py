@@ -54,7 +54,23 @@ def get_all_conversations():
 
 def get_all_conversations_id(id):
     print(id)
-    return Conversacion.query.filter((Conversacion.vendedor == id) | (Conversacion.comprador == id)).all()
+    conversaciones_imagenes = []
+    conversaciones = Conversacion.query.filter((Conversacion.vendedor == id) | (Conversacion.comprador == id)).all()
+    print(conversaciones)
+    for conversacion in conversaciones:
+        print(conversacion)
+        conversacion_imagen= {} 
+        conversacion_imagen["id"] = conversacion.id
+        conversacion_imagen["comprador"] = conversacion.comprador
+        conversacion_imagen["vendedor"] = conversacion.vendedor
+        conversacion_imagen["email_comprador"]= conversacion.email_comprador
+        conversacion_imagen["email_vendedor"]= conversacion.email_vendedor
+        imagen1 = Usuario.query.filter_by(public_id = conversacion.comprador).first().Imagen_Perfil_Path
+        imagen2 = Usuario.query.filter_by(public_id = conversacion.vendedor).first().Imagen_Perfil_Path
+        conversacion_imagen["imagen_comprador"]=imagen1
+        conversacion_imagen["imagen_vendedor"]=imagen2
+        convesaciones_imagenes = conversaciones_imagenes.append(conversacion_imagen)
+    return conversaciones_imagenes
 
 def get_all_conversations_id_id2(id,id2):
     print(id)

@@ -70,6 +70,19 @@ class ConversationDto:
         'email_comprador': fields.String(required=False, description='buyer email'),
     })
 
+class Conversation_imagenDto:
+    api = Namespace(
+        'conversacion', description='conversacion related operations')
+    conversacion = api.model('conversacion', {
+        'id': fields.Integer(required=False, description='id'),
+        'vendedor': fields.String(required=True, description='id del vendedor'),
+        'email_vendedor': fields.String(required=False, description='seller email'),
+        'comprador': fields.String(required=True, description='id del comprador'),
+        'email_comprador': fields.String(required=False, description='buyer email'),
+	'imagen_comprador': fields.String(required=True, description='buyer image'),
+	'imagen_vendedor': fields.String(required=True, description='seller image'),
+    })
+
 
 class MensajeDto:
     api = Namespace(

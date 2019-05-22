@@ -42,7 +42,11 @@ def insertar_producto(data):
                 new_producto.precioAux=data['precioAux']
             if 'fechaexpiracion' in data:
                 expiracion = data['fechaexpiracion']
-                new_producto.fechaexpiracion = expiracion
+                print(expiracion)
+                print ('AAAAAAAAAAAAA')
+                expiracion2 = datetime.strptime(expiracion, '%d/%m/%Y %H:%M:%S')
+                print(expiracion2)
+                new_producto.fechaexpiracion = expiracion2
             if 'latitud' in data:
                 new_producto.latitud=data['latitud']
                 new_producto.longitud=data['longitud']

@@ -16,16 +16,24 @@ def save_new_seguir(user_id, auth, data):
             }
             return response_object, 404
         else:
-            new_seguir = Seguir(
-                seguidor=user.id,
-                seguido=seguido.id
-            )
-            save_changes(new_seguir)
-            response_object = {
-                'status': 'success',
-                'message': 'Usuario seguido',
-            }
-            return response_object, 201
+            siguiendo = Seguir.query.filter_by(seguidor=user.id, seguido=seguido.id).first()
+            if siguiendo:
+                response_object = {
+                    'status': 'fail',
+                    'message': 'Ya sigues a este usuario.',
+                }
+                return response_object, 402
+            else:
+                new_seguir = Seguir(
+                    seguidor=user.id,
+                    seguido=seguido.id
+                )
+                save_changes(new_seguir)
+                response_object = {
+                    'status': 'success',
+                    'message': 'Usuario seguido',
+                }
+                return response_object, 201
     else:
         response_object = {
             'status': 'fail',

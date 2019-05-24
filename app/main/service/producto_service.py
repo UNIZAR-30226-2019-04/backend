@@ -161,6 +161,7 @@ def get_a_product(id_producto, visitante=None):
             'longitud': producto.longitud,
             'radio_ubicacion': producto.radio_ubicacion,
             'vendedor': Usuario.query.filter_by(id=producto.vendedor).first().public_id,
+            'comprador': Usuario.query.filter_by(id=producto.comprador).first().public_id,
             'tipo': producto.tipo,
             'categoria': categoria,
             'multimedia': multi,

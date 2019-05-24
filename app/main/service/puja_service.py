@@ -18,6 +18,9 @@ def save_new_puja(auth, data):
                 'message': 'Usuario o producto no válidos',
             }
             return response_object, 404
+        if not pujado.precioAux:
+            pujado.precioAux = data['valor']
+            save_changes(pujado)
         else:
             query = "SELECT MAX(id) FROM puja"
             result = db.engine.execute(text(query))

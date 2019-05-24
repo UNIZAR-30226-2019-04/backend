@@ -148,6 +148,9 @@ def get_a_product(id_producto, visitante=None):
                     'message': 'Usuario no encontrado.',
                 }
                 return response_object, 404
+        comprador = None
+        if producto.comprador is not None:
+            comprador = Usuario.query.filter_by(id=producto.comprador).first().public_id
         response_object = {
             'id': producto.id,
             'precioBase': producto.precioBase,
@@ -161,7 +164,7 @@ def get_a_product(id_producto, visitante=None):
             'longitud': producto.longitud,
             'radio_ubicacion': producto.radio_ubicacion,
             'vendedor': Usuario.query.filter_by(id=producto.vendedor).first().public_id,
-            'comprador': Usuario.query.filter_by(id=producto.comprador).first().public_id,
+            'comprador': comprador,
             'tipo': producto.tipo,
             'categoria': categoria,
             'multimedia': multi,

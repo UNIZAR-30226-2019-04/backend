@@ -161,7 +161,7 @@ class FotoPerfil(Resource):
 
         UPLOAD_FOLDER = '/var/www/html/user/'
         # UPLOAD_FOLDER = '/srv/http/'
-        SERVER_ROUTE = URL_SERVIDOR + PUERTO_MULTIMEDIA + ':10080/user/'
+        SERVER_ROUTE = URL_SERVIDOR + PUERTO_MULTIMEDIA + '/user/'
         ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
         # check if the post request has the file part

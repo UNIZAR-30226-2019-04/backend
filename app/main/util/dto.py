@@ -26,6 +26,9 @@ class UserDto:
         'nick': fields.String(description='Nick del usuario'),
         'email': fields.String(required=True, description='email del usuario'),
     })
+    user_del = api.model('user', {
+        'password': fields.String(description='Contraseña del usuario')
+    })
 
 
 class CategoriaDto:

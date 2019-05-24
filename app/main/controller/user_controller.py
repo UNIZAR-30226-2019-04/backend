@@ -9,13 +9,15 @@ from ..util.dto import UserDto
 from ..util.dto import ProductoDto
 from ..util.dto import AuthDto
 from ..service.user_service import save_new_user, get_a_user, editar_usuario, get_user_products, get_users, \
-    confirm_user_email, send_confirmation_email, get_comprados, get_vendidos, get_a_user_to_edit, edit_passwd
+    confirm_user_email, send_confirmation_email, get_comprados, get_vendidos, get_a_user_to_edit, edit_passwd, \
+    delete_user
 
 api = UserDto.api
 _user = UserDto.user
 _producto = ProductoDto.producto
 user_auth = AuthDto.user_auth
 _userReg = UserDto.user_reg
+_userDel = UserDto.user_del
 
 
 @api.route('/')
@@ -80,6 +82,17 @@ class User(Resource):
         """Edita un usuario dado su identificador público"""
         data = request.json
         return editar_usuario(public_id, data=data)
+
+    @api.doc('Eliminar un usuario')
+    @api.header('Authorization', 'Token')
+    @api.expect(_userDel)
+    @api.response(201, 'Usuario eliminado.')
+    @api.response(401, 'Autenticación no válida')
+    def delete(self, public_id):
+        """Elimina un usuario dado su identificador público"""
+        auth_header = request.headers.get('Authorization')
+        data = request.json
+        return delete_user(public_id, auth_header, data)
 
 
 @api.route('/<public_id>/products')

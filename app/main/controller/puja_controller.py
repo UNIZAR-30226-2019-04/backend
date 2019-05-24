@@ -13,6 +13,7 @@ _puja = PujaDto.puja
 @api.route('/')
 class Puja(Resource):
     @api.expect(_puja, validate=True)
+    @api.header('Authorization', 'Token')
     @api.response(404, 'Usuario o producto no válidos.')
     @api.response(201, 'Puja creada.')
     @api.response(401, 'Autenticación no válida')

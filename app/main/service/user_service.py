@@ -499,6 +499,31 @@ def edit_passwd(public_id, auth, data):
         return response_object, 404
 
 
+def delete_user(public_id, auth, data):
+    usuario = Usuario.query.filter_by(public_id=public_id).first()
+    if usuario:
+        resp = Usuario.decode_auth_token(auth)
+        user_token = Usuario.query.filter_by(id=resp).first()
+        if user_token == usuario:
+            if usuario.check_password(data['password']):
+                no_vendidos = Producto.query.filter(Producto.comprador is None).filter_by(vendedor=usuario.id).all()
+                for prod in no_vendidos:
+                    prod.borrado = True
+                    if prod.tipo == 'subasta':
+                        query_args = {}
+                        query = "Select usuario, MAX(fecha) from Puja where producto = :id"
+                        query_args['id'] = prod.id
+                        puja = db.engine.execute(text(query), query_args)
+                        for row in puja:
+                            user = Usuario.query.filter_by(id=row[usuario]).first()
+                            # TODO: enviar mail de que el objeto que queria se ha borrado porq ya no esta el usuario
+                            break
+                    save_changes(prod)
+
+                usuario.borrado = True
+                save_changes(usuario)
+
+
 def save_changes(data):
     db.session.add(data)
     db.session.commit()

@@ -186,6 +186,7 @@ class FotoPerfil(Resource):
 
 
 @api.route('/<public_id>/editpasswd')
+@api.header('Authorization', 'Token')
 # @api.param('public_id', 'The User identifier')
 @api.response(404, 'Usuario no encontrado.')
 class UserP(Resource):

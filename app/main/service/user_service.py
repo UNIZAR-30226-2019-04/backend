@@ -195,7 +195,7 @@ def get_a_user(public_id):
             response_object['valoraciones_hechas'].append(valoracion)
 
         # Valoraciones recibidas por el usuario
-        valoraciones_recibidas = Valoracion.query.filter_by(puntuador=id_usr).all()
+        valoraciones_recibidas = Valoracion.query.filter_by(puntuado=id_usr).all()
         for v in valoraciones_recibidas:
             valoracion = {
                 'titulo': v.titulo,

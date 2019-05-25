@@ -22,7 +22,7 @@ from sqlalchemy.orm import sessionmaker
 def insertar_producto(data):
     usuario = Usuario.query.filter_by(public_id=data['vendedor']).first()
     if usuario:
-        categoria = Categoria.query.filter_by(nombre=data['categoria'])
+        categoria = Categoria.query.filter_by(nombre=data['categoria']).first()
         if categoria:
             tipo = data['tipo']
             if tipo == 'subasta' and 'fechaexpiracion' not in data:
@@ -40,6 +40,8 @@ def insertar_producto(data):
             )
             if 'precioAux' in data:
                 new_producto.precioAux=data['precioAux']
+            if tipo == 'subasta':
+                new_producto.precioAux=new_producto.precioBase
             if 'fechaexpiracion' in data:
                 expiracion = data['fechaexpiracion']
                 print(expiracion)
@@ -168,7 +170,8 @@ def get_a_product(id_producto, visitante=None):
             'tipo': producto.tipo,
             'categoria': categoria,
             'multimedia': multi,
-            'deseado': deseado
+            'deseado': deseado,
+            'likes': len(Deseados.query.filter_by(producto_id=producto.id).all())
         }
         return response_object
     else:
@@ -181,7 +184,7 @@ def get_a_product(id_producto, visitante=None):
 
 def search_products(number=None, page=None, textobusqueda=None, preciomin=None, preciomax=None, tipocompra=None,
                     valoracionMin=None, valoracionMax=None, categorias=None, latitud=None, longitud=None, radio=None,
-                    usuario=None):
+                    usuario=None, orden_id=False):
     query_args = {}
     query = "SELECT p.id, p.\"precioBase\", p.\"precioAux\", p.descripcion, p.titulo, p.visualizaciones, p.fecha, " \
             "v.public_id AS vendedor, p.tipo, pe.categoria_nombre, p.latitud, p.longitud, p.radio_ubicacion,"
@@ -252,6 +255,8 @@ def search_products(number=None, page=None, textobusqueda=None, preciomin=None, 
         query_args['longitud'] = longitud
         query_args['radio'] = radio
     query += " GROUP BY p.id, v.public_id, pe.categoria_nombre"
+    if orden_id:
+        query += " ORDER BY p.id DESC"
     numresquery = "SELECT COUNT(*) FROM (" + query + ") AS res"
     query += " LIMIT :number OFFSET :page"
     query_args['number'] = number
@@ -415,7 +420,7 @@ def marcar_venta_realizada(prod_id, comprador, paypal: bool):
             producto.comprador = user.id
             producto.paypal = paypal
             save_changes(producto)
-            return producto
+            return {'status': 'success'}, 200
         else:
             response_object = {
                 'status': 'fail',

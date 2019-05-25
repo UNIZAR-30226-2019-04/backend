@@ -17,6 +17,12 @@ class Auth:
             elif user_nick:
                 user = user_nick
             if user and user.check_password(data.get('password')):
+                if user.borrado:
+                    response_object = {
+                        'status': 'fail',
+                        'message': 'Usuario borrado'
+                    }
+                    return response_object, 400
                 if user.validado:
                     auth_token = Usuario.encode_auth_token(user.id)
                     if auth_token:

@@ -185,24 +185,32 @@ def get_a_user(public_id):
         # Valoraciones hechas por el usuario
         valoraciones_hechas = Valoracion.query.filter_by(puntuador=id_usr).all()
         for v in valoraciones_hechas:
+            usr_puntuado = Usuario.query.filter_by(id=v.puntuado).first()
             valoracion = {
                 'titulo': v.titulo,
                 'descripcion': v.descripcion,
                 'puntuacion': v.puntuacion,
                 'puntuador': user.public_id,
-                'puntuado': Usuario.query.filter_by(id=v.puntuado).first().public_id,
+                'puntuador_nick': user.nick,
+                'puntuador_img': user.Imagen_Perfil_Path,
+                'puntuado': usr_puntuado.public_id,
+                'puntuado_nick': usr_puntuado.nick
             }
             response_object['valoraciones_hechas'].append(valoracion)
 
         # Valoraciones recibidas por el usuario
         valoraciones_recibidas = Valoracion.query.filter_by(puntuado=id_usr).all()
         for v in valoraciones_recibidas:
+            usr_puntuador = Usuario.query.filter_by(id=v.puntuador).first()
             valoracion = {
                 'titulo': v.titulo,
                 'descripcion': v.descripcion,
                 'puntuacion': v.puntuacion,
-                'puntuador': user.public_id,
-                'puntuado': Usuario.query.filter_by(id=v.puntuado).first().public_id,
+                'puntuador': usr_puntuador.public_id,
+                'puntuador_nick': usr_puntuador.nick,
+                'puntuador_img': usr_puntuador.Imagen_Perfil_Path,
+                'puntuado': user.public_id,
+                'puntuado_nick': user.nick
             }
             response_object['valoraciones_recibidas'].append(valoracion)
         return response_object

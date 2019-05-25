@@ -40,6 +40,8 @@ def insertar_producto(data):
             )
             if 'precioAux' in data:
                 new_producto.precioAux=data['precioAux']
+            if tipo == 'subasta':
+                new_producto.precioAux=new_producto.precioBase
             if 'fechaexpiracion' in data:
                 expiracion = data['fechaexpiracion']
                 print(expiracion)

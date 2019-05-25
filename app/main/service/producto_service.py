@@ -22,7 +22,7 @@ from sqlalchemy.orm import sessionmaker
 def insertar_producto(data):
     usuario = Usuario.query.filter_by(public_id=data['vendedor']).first()
     if usuario:
-        categoria = Categoria.query.filter_by(nombre=data['categoria'])
+        categoria = Categoria.query.filter_by(nombre=data['categoria']).first()
         if categoria:
             tipo = data['tipo']
             if tipo == 'subasta' and 'fechaexpiracion' not in data:
@@ -170,7 +170,8 @@ def get_a_product(id_producto, visitante=None):
             'tipo': producto.tipo,
             'categoria': categoria,
             'multimedia': multi,
-            'deseado': deseado
+            'deseado': deseado,
+            'likes': len(Deseados.query.filter_by(producto_id=producto.id).all())
         }
         return response_object
     else:

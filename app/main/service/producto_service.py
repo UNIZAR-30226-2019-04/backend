@@ -184,7 +184,7 @@ def get_a_product(id_producto, visitante=None):
 
 def search_products(number=None, page=None, textobusqueda=None, preciomin=None, preciomax=None, tipocompra=None,
                     valoracionMin=None, valoracionMax=None, categorias=None, latitud=None, longitud=None, radio=None,
-                    usuario=None):
+                    usuario=None, orden_id=False):
     query_args = {}
     query = "SELECT p.id, p.\"precioBase\", p.\"precioAux\", p.descripcion, p.titulo, p.visualizaciones, p.fecha, " \
             "v.public_id AS vendedor, p.tipo, pe.categoria_nombre, p.latitud, p.longitud, p.radio_ubicacion,"
@@ -255,6 +255,8 @@ def search_products(number=None, page=None, textobusqueda=None, preciomin=None, 
         query_args['longitud'] = longitud
         query_args['radio'] = radio
     query += " GROUP BY p.id, v.public_id, pe.categoria_nombre"
+    if orden_id:
+        query += " ORDER BY p.id"
     numresquery = "SELECT COUNT(*) FROM (" + query + ") AS res"
     query += " LIMIT :number OFFSET :page"
     query_args['number'] = number

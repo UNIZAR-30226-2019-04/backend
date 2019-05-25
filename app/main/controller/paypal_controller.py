@@ -1,6 +1,6 @@
 from flask_restplus import Resource
 
-from app.main.config import URL_SERVIDOR, PUERTO_API
+from app.main.config import URL_API
 from app.main.model.usuario import Usuario
 from app.main.util.dto import PaypalDto
 from app.main.service.producto_service import get_a_product, marcar_venta_realizada
@@ -33,7 +33,7 @@ class PaypalCompra(Resource):
                 pass
 
             respuesta = realizar_compra(id_producto=id_producto, precio=precio,
-                                        return_url=URL_SERVIDOR + PUERTO_API + "/paypal/captura/" + str(id_producto))
+                                        return_url=URL_API + "/paypal/captura/" + str(id_producto))
             ids.setdefault('id_producto', {'id_paypal': respuesta['id'], 'link': respuesta['links'][1]['href'],
                                            'email': email_vendedor, 'producto_name': producto['titulo'],
                                            'precio': precio, 'public_id_comprador': public_id_comprador})

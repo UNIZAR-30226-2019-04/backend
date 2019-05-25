@@ -4,7 +4,7 @@ from flask import request
 from flask_restplus import Resource
 import os
 
-from app.main.config import URL_SERVIDOR, PUERTO_MULTIMEDIA
+from app.main.config import URL_MULTIMEDIA
 from app.main.model.producto import Producto
 from app.main.model.multimedia import Multimedia
 from app.main.model.usuario import Usuario
@@ -16,7 +16,7 @@ api = MultimediaDto.api
 
 UPLOAD_FOLDER = '/var/www/html/producto/'
 #UPLOAD_FOLDER = '/srv/http/'
-SERVER_ROUTE = URL_SERVIDOR + PUERTO_MULTIMEDIA + '/producto/'
+SERVER_ROUTE = URL_MULTIMEDIA + '/producto/'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4'}
 
 

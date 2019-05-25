@@ -3,7 +3,7 @@ import os
 from flask import request
 from flask_restplus import Resource
 
-from app.main.config import URL_SERVIDOR, PUERTO_MULTIMEDIA
+from app.main.config import URL_MULTIMEDIA
 from app.main.util.decorator import admin_token_required
 from ..util.dto import UserDto
 from ..util.dto import ProductoDto
@@ -162,7 +162,7 @@ class FotoPerfil(Resource):
 
         UPLOAD_FOLDER = '/var/www/html/user/'
         # UPLOAD_FOLDER = '/srv/http/'
-        SERVER_ROUTE = URL_SERVIDOR + PUERTO_MULTIMEDIA + '/user/'
+        SERVER_ROUTE = URL_MULTIMEDIA + '/user/'
         ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
         # check if the post request has the file part
@@ -209,4 +209,4 @@ class SaveNotificationToken(Resource):
     @api.marshal_list_with(_token,envelope='data')
     def post(self,public_id):
         data = request.json
-        return save_token(public_id,data=data)
+        return save_token(public_id, data=data)

@@ -522,6 +522,11 @@ def delete_user(public_id, auth, data):
 
                 usuario.borrado = True
                 save_changes(usuario)
+                response_object = {
+                    'status': 'success',
+                    'message': 'Borrado satisfactorio'
+                }
+                return response_object, 200
 
 
 def save_changes(data):

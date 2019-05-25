@@ -256,7 +256,7 @@ def search_products(number=None, page=None, textobusqueda=None, preciomin=None, 
         query_args['radio'] = radio
     query += " GROUP BY p.id, v.public_id, pe.categoria_nombre"
     if orden_id:
-        query += " ORDER BY p.id"
+        query += " ORDER BY p.id DESC"
     numresquery = "SELECT COUNT(*) FROM (" + query + ") AS res"
     query += " LIMIT :number OFFSET :page"
     query_args['number'] = number

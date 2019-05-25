@@ -1,12 +1,16 @@
 import os
 import unittest
+import threading
 
 from flask_migrate import Migrate, MigrateCommand
-from flask_script import Manager
+from flask_script import Manager, Server
 
 from app import blueprint
 from app.main import create_app, db, socketio
 from app.main.model import blacklist, deseados,mensaje,pertenece,producto,reporteProducto, reporteUsuario,seguir, seguir, valoracion, categoria
+from app.main.service.user_service import recomendar
+
+
 
 app = create_app(os.getenv('BOILERPLATE_ENV') or 'dev')
 app.register_blueprint(blueprint)
@@ -20,10 +24,12 @@ migrate = Migrate(app, db)
 
 manager.add_command('db', MigrateCommand)
 
+threading.Timer(7200, recomendar).start()
+
 
 @manager.command
 def run():
-    socketio.run(app,host='0.0.0.0',port='5000')
+    socketio.run(app,host='127.0.0.1',port='5000')
     # app.run()
 
 
@@ -39,3 +45,4 @@ def test():
 
 if __name__ == '__main__':
     manager.run()
+

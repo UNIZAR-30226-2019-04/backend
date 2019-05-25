@@ -25,6 +25,7 @@ class Usuario(db.Model):
     Imagen_Perfil_Path = db.Column(db.String(255), nullable=False, default="http://34.90.77.95:10080/user/default.png")
     borrado = db.Column(db.Boolean, nullable=False, default=False)
     descripcion = db.Column(db.Text, nullable=False, default='')
+    token = db.Column(db.String, nullable=True, default='')
 
 
     @property

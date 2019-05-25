@@ -49,3 +49,4 @@ class ConversacionList(Resource):
         """Creates a new User """
         data = request.json
         return save_new_mensaje(data=data)
+

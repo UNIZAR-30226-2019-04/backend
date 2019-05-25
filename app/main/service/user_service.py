@@ -1,5 +1,8 @@
 import uuid
+import threading
 import datetime
+import random
+import time
 
 from app.main import db
 from app.main.model.deseados import Deseados
@@ -8,10 +11,15 @@ from app.main.model.pertenece import Pertenece
 from app.main.model.usuario import Usuario
 from app.main.model.producto import Producto
 from app.main.model.valoracion import Valoracion
-from app.main.service.generar_email import generateEmail
-from ..config import mailer
-from sqlalchemy import text
+from app.main.service.generar_email import generateEmail, generateEmail_6
+from app.main.model.categoriaVisitada import CategoriaVisitada
 
+
+from ..config import mailer
+from sqlalchemy import text, func
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 def save_new_user(data):
     user_nick = Usuario.query.filter_by(nick=data['username']).first()
@@ -25,6 +33,7 @@ def save_new_user(data):
         )
         save_changes(new_user)
         send_confirmation_email(new_user)
+        #threading.Timer(60, recomendar, [new_user.public_id]).start()
         return generate_token(new_user)
     elif user_mail:
         response_object = {
@@ -99,6 +108,7 @@ def get_users():
 
 # Recuperar un usuario dada su id publica
 def get_a_user(public_id):
+    #recomendar()
     user = Usuario.query.filter_by(public_id=public_id, borrado=False).first()
     if user:
         response_object = {
@@ -498,6 +508,72 @@ def edit_passwd(public_id, auth, data):
         }
         return response_object, 404
 
+
+def enviar_mail2(usuario,html_email, session):
+    print("Enviar email")
+    try:
+        mailer.send(
+            subject='Recomendaciones telocam',
+            html=html_email,
+            from_email='telocam.soporte@gmail.com',
+            to=[usuario.email]
+        )
+        response_object = {
+            'status': 'success',
+            'message': 'Successfully sent.',
+        }
+        print(response_object)
+        return response_object, 201
+    except Exception as e:
+        response_object = {
+            'status': 'fail',
+            'message': 'Some error occurred. Please try again.'
+        }
+        print(response_object, e)
+        return response_object, 401
+
+
+def recomendar():
+    engine = create_engine('postgresql://postgres:postgres@localhost:5432/postgres')
+
+    # create a configured "Session" class
+    Session = sessionmaker(bind=engine)
+
+    # create a Session
+    session = Session()
+
+    print('DENTROOO')
+    while(1):
+        users = session.query(Usuario).all()
+        for user in users:
+            quiereEmails = user.quiereEmails
+            borrado = user.borrado
+            if not borrado and quiereEmails:
+                print ('AAAAAAAAAAAAA')
+                categoria = session.query(CategoriaVisitada).filter_by(usuario=user.id).order_by(CategoriaVisitada.veces).first()
+                if categoria:
+                    print('BBBBBB')
+                    print (categoria.categoria_nombre)
+                    print (categoria.usuario)
+                    print (categoria.veces)
+                    productos = session.query(Pertenece).filter_by(categoria_nombre=categoria.categoria_nombre).all()
+                    if productos:
+                        print('CCCCCCCC')
+                        producto = random.choice(productos)
+                        producto = session.query(Producto).filter_by(id=producto.producto_id).first()
+                        vendedor = session.query(Usuario).filter_by(id=producto.vendedor).first()
+                        html_email=generateEmail_6(vendedor,producto,user,session)
+                        enviar_mail2(user,html_email,session)
+        time.sleep(60)
+    #session.close()
+    #threading.Timer(60, recomendar).start()
+
+
+def save_token(public_id,data):
+    user = Usuario.query.filter_by(public_id=public_id, borrado=False).first()
+    if user:
+        user.token = data['token']
+        save_changes(user)
 
 def delete_user(public_id, auth, data):
     usuario = Usuario.query.filter_by(public_id=public_id).first()

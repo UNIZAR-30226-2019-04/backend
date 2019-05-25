@@ -29,7 +29,9 @@ class UserDto:
     user_del = api.model('user', {
         'password': fields.String(description='Contraseña del usuario')
     })
-
+    token = api.model('token', {
+        'token': fields.String(required=True, descricion='token'),
+    })
 
 class CategoriaDto:
     api = Namespace('categoria', description='categoria related operations')

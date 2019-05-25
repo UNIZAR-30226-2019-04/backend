@@ -5,7 +5,9 @@ from flask_cors import CORS
 import logging
 from flask_socketio import SocketIO
 
+
 from .config import config_by_name
+
 
 db = SQLAlchemy()
 flask_bcrypt = Bcrypt()
@@ -25,5 +27,6 @@ def create_app(config_name):
     db.init_app(app)
     flask_bcrypt.init_app(app)
     socketio.init_app(app)
+
 
     return app

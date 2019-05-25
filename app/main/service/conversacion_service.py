@@ -5,6 +5,7 @@ from app.main import db
 from app.main.model.conversacion import Conversacion
 from app.main.model.mensaje import Mensaje
 from app.main.model.usuario import Usuario
+from app.main.service.notification_service import send_push_message
 
 from .user_service import get_user_id
 
@@ -12,7 +13,12 @@ from .user_service import get_user_id
 def save_new_conversation(data):
     print("HOLA")
     vendedor = data['vendedor']
+    vendedor2 = Usuario.query.filter_by(public_id=vendedor).first()
     comprador = data['comprador']
+    if vendedor2.token:
+        nombre = Usuario.query.filter_by(public_id=comprador).first().nick
+        string = "El usuario " +  nombre + " quiere hablar contigo"
+        send_push_message(vendedor2.token, string)
     chat = Conversacion.query.filter_by(
         vendedor = vendedor, comprador=comprador).first()
     chat2 = Conversacion.query.filter_by(

@@ -10,7 +10,7 @@ from ..util.dto import ProductoDto
 from ..util.dto import AuthDto
 from ..service.user_service import save_new_user, get_a_user, editar_usuario, get_user_products, get_users, \
     confirm_user_email, send_confirmation_email, get_comprados, get_vendidos, get_a_user_to_edit, edit_passwd, \
-    delete_user
+    delete_user, save_token
 
 api = UserDto.api
 _user = UserDto.user
@@ -18,6 +18,7 @@ _producto = ProductoDto.producto
 user_auth = AuthDto.user_auth
 _userReg = UserDto.user_reg
 _userDel = UserDto.user_del
+_token = UserDto.token
 
 
 @api.route('/')
@@ -199,3 +200,13 @@ class UserP(Resource):
         auth_header = request.headers.get('Authorization')
         data = request.json
         return edit_passwd(public_id, auth_header, data=data)
+
+@api.route('/<public_id>/token/')
+@api.expect(_token)
+@api.response(200, 'Token guardado con exito')
+class SaveNotificationToken(Resource):
+    @api.doc('Funcion guardar token')
+    @api.marshal_list_with(_token,envelope='data')
+    def post(self,public_id):
+        data = request.json
+        return save_token(public_id,data=data)

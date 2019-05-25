@@ -2,6 +2,7 @@ from flask import request
 from flask_restplus import Resource
 import numpy as np
 
+from app.main.model.usuario import Usuario
 from app.main.util.decorator import admin_token_required
 from ..util.dto import ProductoDto
 from ..util.dto import CategoriaListaDto
@@ -106,9 +107,26 @@ class Product(Resource):
 @api.route('/<id>/venta/<public_id_comprador>')
 # @api.param('public_id', 'The User identifier')
 @api.response(404, 'Producto no encontrado.')
-class Product(Resource):
+class ProductVenta(Resource):
 
     def post(self, id, public_id_comprador):
         """Venta de un producto sin paypal (para paypal ir a llamada correspondiente)"""
         return marcar_venta_realizada(prod_id=id, comprador=public_id_comprador, paypal=False)
 
+
+@api.route('/<id>/ventapornick/<nick_comprador>')
+# @api.param('public_id', 'The User identifier')
+@api.response(404, 'Producto no encontrado.')
+class ProductVentaPorNick(Resource):
+
+    def post(self, id, nick_comprador):
+        """Venta de un producto sin paypal (para paypal ir a llamada correspondiente)"""
+        user = Usuario.query.filter_by(nick=nick_comprador).first()
+        if not user:
+            response_object = {
+                'status': 'fail',
+                'message': 'User not found.',
+            }
+            return response_object, 404
+        else:
+            return marcar_venta_realizada(prod_id=id, comprador=user.public_id, paypal=False)

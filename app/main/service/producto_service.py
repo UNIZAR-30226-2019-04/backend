@@ -418,7 +418,7 @@ def marcar_venta_realizada(prod_id, comprador, paypal: bool):
             producto.comprador = user.id
             producto.paypal = paypal
             save_changes(producto)
-            return producto
+            return {'status': 'success'}, 200
         else:
             response_object = {
                 'status': 'fail',

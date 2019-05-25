@@ -34,6 +34,7 @@ class ProductoList(Resource):
         valoracionMax = request.args.get('valoracionMax', default=None, type=int)
         tipocompra = request.args.get('tipo', default=None, type=str)
         usuario = request.args.get('usuario', default=None, type=str)
+        orden_id = request.args.get('orden_id', default=False, type=bool)
         print(request)
         print(request.args)
         print(tipocompra)
@@ -48,7 +49,7 @@ class ProductoList(Resource):
 
         # TODO Pasar parámetros y hacer búsqueda
         return search_products(number, page, textobusqueda, preciomin, preciomax, tipocompra, valoracionMin,
-                               valoracionMax, categorias, latitud, longitud, radio, usuario)
+                               valoracionMax, categorias, latitud, longitud, radio, usuario, orden_id)
 
     # @api.expect(_producto, validate=True)
     @api.expect(_producto)

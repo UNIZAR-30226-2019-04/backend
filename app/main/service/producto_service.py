@@ -14,6 +14,7 @@ from app.main.model.categoria import Categoria
 from app.main.model.categoriaVisitada import CategoriaVisitada
 from app.main.model.puja import Puja
 from app.main.service.generar_email import generateEmail_4, generateEmail_5
+from app.main.config import DevelopmentConfig
 from .. import db
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -331,7 +332,7 @@ def fin_subasta(prod_id):
 
     print("ENTRO EN FINAL SUBASTA DE PRODUCTO", str(prod_id))
 
-    engine = create_engine('postgresql://postgres:postgres@localhost:5432/postgres')
+    engine = create_engine(DevelopmentConfig.SQLALCHEMY_DATABASE_URI)
 
     # create a configured "Session" class
     Session = sessionmaker(bind=engine)

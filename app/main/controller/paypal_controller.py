@@ -51,6 +51,8 @@ class PaypalVenta(Resource):
 
         infopaypal = ids['id_producto']
 
+        print("InfoPaypal:", str(infopaypal))
+
         capturar_compra(infopaypal['id_paypal'])
         respuesta = realizar_pago_a_vendedor(email=infopaypal['email'], producto_name=infopaypal['producto_name'],
                                              producto_id=id_producto, precio=infopaypal['precio'])

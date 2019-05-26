@@ -328,6 +328,9 @@ def add_categorias(producto, data):
 
 
 def fin_subasta(prod_id):
+
+    print("ENTRO EN FINAL SUBASTA DE PRODUCTO", str(prod_id))
+
     engine = create_engine('postgresql://postgres:postgres@localhost:5432/postgres')
 
     # create a configured "Session" class

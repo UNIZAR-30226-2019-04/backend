@@ -416,6 +416,9 @@ def enviar_aviso_vendedor(prod, session):
 
 
 def marcar_venta_realizada(prod_id, comprador, paypal: bool):
+
+    print("Vendiendo producto a", str(comprador), "paypal:", str(paypal))
+
     producto = Producto.query.filter_by(id=prod_id, borrado=False).first()
     if producto:
         user = Usuario.query.filter_by(public_id=comprador).first()

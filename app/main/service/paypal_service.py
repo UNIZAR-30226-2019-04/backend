@@ -3,6 +3,7 @@ import json
 
 import requests
 import sys
+import datetime
 
 from app.main.config import PAYPAL_CLIENT_ID, PAYPAL_SECRET
 
@@ -63,7 +64,7 @@ def realizar_pago_a_vendedor(email: str, producto_name, producto_id, precio: flo
     auth_token_paypal = sys.modules[__name__].auth_token_paypal
     return requests.request("POST", "https://api.sandbox.paypal.com/v1/payments/payouts", data=("""{
         \"sender_batch_header\": {
-            \"sender_batch_id\": \"Venta_final1_Telocam_""" + str(producto_id) + """\",
+            \"sender_batch_id\": \"Venta__Telocam_""" + datetime.datetime.now().isoformat() + str(producto_id) + """\",
             \"email_subject\": \"¡Has vendido un producto!\",
             \"email_message\": \"¡Enhorabuena, has vendido tu producto en Telocam!\"
         },

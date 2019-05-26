@@ -37,6 +37,7 @@ class PaypalCompra(Resource):
             ids.setdefault('id_producto', {'id_paypal': respuesta['id'], 'link': respuesta['links'][1]['href'],
                                            'email': email_vendedor, 'producto_name': producto['titulo'],
                                            'precio': precio, 'public_id_comprador': public_id_comprador})
+            print("PAYPALCOMPRA", str(respuesta))
             return {'id': respuesta['id'], 'link': respuesta['links'][1]['href']}
         else:
             return producto

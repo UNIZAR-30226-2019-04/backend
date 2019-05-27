@@ -358,9 +358,11 @@ def fin_subasta(prod_id):
                 d = {**d, **{column: value}}
             a.append(d)
         if a:
+            print("GANADOR")
             ganador = session.query(Usuario).filter_by(id=a[0]['usuario']).first()
             enviar_mail(prod, ganador, session)
         else:
+            print("VENDEDOR")
             enviar_aviso_vendedor(prod, session)
         session.close()
 

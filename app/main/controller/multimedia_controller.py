@@ -66,7 +66,7 @@ class MultimediaPost(Resource):
                         vendedor = Usuario.query.filter_by(id=prod.vendedor).first()
                         seguidores_id = Seguir.query.filter_by(seguido=vendedor.id).all()
                         for seguidor_id in seguidores_id:
-                            seguidor = Usuario.query.filter_by(id=seguidor_id).first()
+                            seguidor = Usuario.query.filter_by(id=seguidor_id.seguidor).first()
                             enviar_mail(vendedor, prod, seguidor)
                     return ({'status': 'success', 'message': 'Archivo subido correctamente',
                              "data": [{"path": SERVER_ROUTE + file_path}]}), 200

@@ -49,7 +49,7 @@ def generateEmail_2(vendedor, prod, user):
     tag_descrp = soup.find(id="descripcion")
     tag_descrp.string.replace_with(prod.descripcion)
 
-    url_token = "http://telocam.com/producto/" + str(prod.id)
+    url_token = "https://telocam.com/#/ProductPage?idProd=" + str(prod.id)
     button = soup.find(id="button")
     button['href'] = url_token
     a_token = soup.find(id="url_token")
@@ -90,7 +90,7 @@ def generateEmail_4(prod, user, session):
     tag_descrp = soup.find(id="descripcion")
     tag_descrp.string.replace_with(prod.descripcion)
 
-    url_token = "http://telocam.com/producto/" + str(prod.id)
+    url_token = "https://telocam.com/#/ProductPage?idProd=" + str(prod.id)
     button = soup.find(id="button")
     button['href'] = url_token
     a_token = soup.find(id="url_token")

@@ -115,7 +115,8 @@ def generateEmail_5(prod, user, session):
     a_token.string.replace_with(url_token)
 
     return str(soup)
-    
+
+
 def generateEmail_6(vendedor, prod, user,session):
     soup = load_preview("mailProducto.html")
     tag_nombre = soup.find(id="titulo_prod")
@@ -134,12 +135,15 @@ def generateEmail_6(vendedor, prod, user,session):
         foto1['src'] = imagenes[0].path
 
         foto2 = soup.find(id="picture_2")
-        foto2['src'] = imagenes[1].path
+        try:
+            foto2['src'] = imagenes[1].path
+        except:
+            foto2['src'] = "https://multimedia.telocam.com/producto/noimage.png"
 
     tag_descrp = soup.find(id="descripcion")
     tag_descrp.string.replace_with(prod.descripcion)
 
-    url_token = "http://telocam.com/producto/" + str(prod.id)
+    url_token = "https://telocam.com/#/ProductPage?idProd=" + str(prod.id)
     button = soup.find(id="button")
     button['href'] = url_token
     a_token = soup.find(id="url_token")

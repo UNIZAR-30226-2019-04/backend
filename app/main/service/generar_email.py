@@ -109,7 +109,7 @@ def generateEmail_5(prod, user, session):
     tag_nombre = soup.find(id="prod_name")
     tag_nombre.string.replace_with(prod.titulo)
 
-    url_token = "http://telocam.com/producto/" + str(prod.id)
+    url_token = "https://telocam.com/#/ProductPage?idProd=" + str(prod.id)
     a_token = soup.find(id="url_token")
     a_token['href'] = url_token
     a_token.string.replace_with(url_token)

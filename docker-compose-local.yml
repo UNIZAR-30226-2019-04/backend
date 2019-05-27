@@ -1,0 +1,16 @@
+version: "3"
+services:
+  api:
+    build: .
+    command: bash -c "rm -rf migrations && python manage.py db init && python manage.py db migrate && python manage.py db upgrade && python manage.py run"
+    ports:
+      - "5001:5000"
+
+    env_file:
+      - .env
+    network_mode: "host"
+    volumes:
+      - .:/app
+
+volumes:
+    db-data:

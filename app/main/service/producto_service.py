@@ -73,6 +73,7 @@ def insertar_producto(data):
             save_changes(new_pertenece)
             if tipo == 'subasta':
                 actual = datetime.now()
+                print("THREAD SUBASTA:")
                 print(expiracion)
                 resta = datetime.strptime(expiracion, '%d/%m/%Y %H:%M:%S')-actual
                 print(actual)
